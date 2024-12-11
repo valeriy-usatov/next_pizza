@@ -16,7 +16,7 @@ const SortPopup = () => {
           <Popover>
             <PopoverTrigger>Open</PopoverTrigger>
             <PopoverContent>{sortIems.map(item=>(
-              <li>{item.name}</li>
+              <li key={item.name}>{item.name}</li>
               ))}</PopoverContent>
           </Popover>
         </span>

@@ -8,7 +8,6 @@ import React, { useState } from 'react';
 const Categories = () => {
   const [current, setCurrent] = useState<number>(0);
   const activeCategoryId = useCategoryStore((state) => state.activeId);
-  console.log(activeCategoryId);
 
   const handleClickCategory = (index: number) => {
     setCurrent(activeCategoryId);
