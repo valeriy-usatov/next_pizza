@@ -3,13 +3,16 @@
 import React, { useEffect, useState } from 'react';
 import { ArrowUp } from 'lucide-react';
 import FilterCheckbox, { FilterChecboxProps } from './FilterCheckbox';
-import { allCheckboxFilter } from '@/data/constant';
 import { Input } from '../ui/input';
 import { Skeleton } from '../ui';
 import { useFiltersStore } from '@/store/filters';
 
 type Item = FilterChecboxProps;
 
+type SelectedItem = {
+  id: number;
+  name: string;
+};
 interface Props {
   items?: Item[];
   defaultItems?: Item[];
@@ -40,16 +43,12 @@ const CheckboxFiltersGroup = ({
   const [searchValue, setSearchValue] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [ingredients, setIngredients] = useState<Checkbox[]>([]);
-  const [selectedItems, setSelectedItems] = useState<{ id: number; name: string }[]>([]);
+  // const [selectedItems, setSelectedItems] = useState<{ id: number; name: string }[]>([]);
   const { filterIngredients, updateFilterIngredients } = useFiltersStore();
 
-  // Обновление состояния фильтров в Zustand
-  useEffect(() => {
-    updateFilterIngredients(selectedItems);
-  }, [selectedItems, updateFilterIngredients]);
-
-  // Для проверки, выбран ли чекбокс, используем метод some() для массива
-  const isChecked = (id: number) => selectedItems.some((item) => item.id === id);
+  // выбран ли чекбокс, используем метод some() для массива
+  const isChecked = (id: number, selectedItems: SelectedItem[]) =>
+    selectedItems.some((item) => item.id === id);
 
   const list = isShowAll
     ? ingredients.filter((item) => item.name.toLowerCase().includes(searchValue.toLowerCase()))
@@ -96,16 +95,18 @@ const CheckboxFiltersGroup = ({
     );
   }
   // Обработчик для изменения состояния чекбокса
-  const handleCheckedChange = (id: number, name: string, checked: boolean) => {
-    setSelectedItems((prev) => {
-      if (checked) {
-        // Добавляем объект в массив
-        return [...prev, { id, name }];
-      } else {
-        // Убираем объект из массива
-        return prev.filter((item) => item.id !== id);
-      }
-    });
+  const handleCheckedChange = (
+    id: number,
+    name: string,
+    updateFilter: (items: SelectedItem[]) => void,
+    selectedItems: SelectedItem[],
+    checked: boolean,
+  ) => {
+    const updatedItems = checked
+      ? [...selectedItems, { id, name }] // Добавляем объект
+      : selectedItems.filter((item) => item.id !== id); // Убираем объект
+
+    updateFilter(updatedItems); // Обновляем хранилище
   };
 
   return (
@@ -121,12 +122,20 @@ const CheckboxFiltersGroup = ({
               key={`${item.id}_${index}`}
               text={item.name}
               value={item.name}
-              checked={isChecked(item.id)} // Проверяем, отмечен ли чекбокс Контролируем состояние чекбокса
-              onCheckedChange={(checked) => handleCheckedChange(item.id, item.name, checked)}
+              checked={isChecked(item.id, filterIngredients)}
+              onCheckedChange={(checked) =>
+                handleCheckedChange(
+                  item.id,
+                  item.name,
+                  updateFilterIngredients,
+                  filterIngredients,
+                  checked,
+                )
+              }
             ></FilterCheckbox>
           </div>
         ))}
-        {allCheckboxFilter.length > limit && (
+        {ingredients.length > limit && (
           <button onClick={() => SetIsShowAll(!isShowAll)} className="text-primary text-left">
             {isShowAll ? (
               <div className="flex items-center gap-2">

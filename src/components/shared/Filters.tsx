@@ -7,8 +7,7 @@ import CheckboxFiltersGroup from './CheckboxFiltersGroup';
 import { pizzaSizeOptions, pizzaTypes } from '../../../prisma/constant';
 import { useFiltersStore } from '@/store/filters';
 import qs from 'qs';
-import { useRouter, useSearchParams } from 'next/navigation';
-
+import { useRouter } from 'next/navigation';
 
 interface PriceProps {
   priceFrom?: number;
@@ -21,47 +20,33 @@ type SelectedItem = {
 };
 
 const Filters = () => {
-  const searchParams = useSearchParams();
   const router = useRouter();
-  const [selectPrice, setSelectPrice] = useState<PriceProps>({ });
-  const [selectedSize, setSelectedSize] = useState<{ id: number; name: string }[]>([]);
-  const [selectedType, setSelectedType] = useState<{ id: number; name: string }[]>([]);
 
   const { price, size, type, filterIngredients, updatePrice, updateSize, updateType } =
     useFiltersStore();
-  
-  // Обновление фильтров в глобальном хранилище
-  useEffect(() => {
-    updatePrice(selectPrice);
-    updateSize(selectedSize);
-    updateType(selectedType);
-  }, [selectPrice, selectedSize, selectedType]);
 
   // Мемоизация фильтров для передачи в qs.stringify
   const filter = useMemo(() => {
     return {
-      priceFrom: selectPrice.priceFrom,
-      priceTo: selectPrice.priceTo,
-      size: selectedSize.map((item) => item.name),
-      type: selectedType.map((item) => item.name),
+      priceFrom: price.priceFrom,
+      priceTo: price.priceTo,
+      size: size.map((item) => item.name),
+      type: type.map((item) => item.name),
       ingredients: filterIngredients.map((item) => item.name),
     };
-  }, [selectPrice  , selectedSize, selectedType, filterIngredients]);
-
-  console.log("searchParams",searchParams, 9999);
-  
+  }, [price, type, size, filterIngredients]);
 
   // Преобразование фильтров в строку запроса
   const filterQueryString = useMemo(() => {
     return qs.stringify(filter, { arrayFormat: 'comma' });
-    
   }, [filter]);
 
   useEffect(() => {
     // Обновляем URL при изменении строки запроса
-    router.push(`?${filterQueryString}`);
+    router.push(`?${filterQueryString}`, {
+      scroll: false /* отмена скрола */,
+    });
   }, [filterQueryString, router]);
-
 
   console.log('Filter Query String:', filterQueryString);
 
@@ -72,18 +57,15 @@ const Filters = () => {
   const handleCheckedChange = (
     id: number,
     name: string,
-    setSelected: React.Dispatch<React.SetStateAction<SelectedItem[]>>,
+    updateFilter: (items: SelectedItem[]) => void,
+    selectedItems: SelectedItem[],
     checked: boolean,
   ) => {
-    setSelected((prev) => {
-      if (checked) {
-        // Добавляем объект в массив
-        return [...prev, { id, name }];
-      } else {
-        // Убираем объект из массива
-        return prev.filter((item) => item.id !== id);
-      }
-    });
+    const updatedItems = checked
+      ? [...selectedItems, { id, name }] // Добавляем объект
+      : selectedItems.filter((item) => item.id !== id); // Убираем объект
+
+    updateFilter(updatedItems); // Обновляем хранилище
   };
 
   return (
@@ -93,6 +75,7 @@ const Filters = () => {
         <FilterCheckbox text="Можно собирать" value="1" />
         <FilterCheckbox text="Новинки" value="2" />
       </div>
+      {/* Размеры */}
       <div className="flex flex-col gap-4 border-b py-6 border-gray-300">
         <p className="font-bold mb-3">Размеры</p>
         <div className="flex flex-col gap-3">
@@ -101,9 +84,9 @@ const Filters = () => {
               text={item.text}
               value={item.text}
               key={item.id}
-              checked={isChecked(item.id, selectedSize)}
+              checked={isChecked(item.id, size)} // Проверяем в глобальном хранилище
               onCheckedChange={(checked) =>
-                handleCheckedChange(item.id, item.value, setSelectedSize, checked)
+                handleCheckedChange(item.id, item.text, updateSize, size, checked)
               }
             />
           ))}
@@ -116,26 +99,24 @@ const Filters = () => {
           <div className="relative">
             <Input
               type="number"
-              placeholder={String(selectPrice.priceFrom)}
-              value={String(selectPrice.priceFrom || 0)}
+              placeholder={String(price.priceFrom)}
+              value={String(price.priceFrom || 0)}
               min={0}
               max={1000}
               className="pr-6"
-              onChange={(e) =>
-                setSelectPrice({ ...selectPrice, priceFrom: Number(e.target.value) })
-              }
+              onChange={(e) => updatePrice({ ...price, priceFrom: Number(e.target.value) })}
             />
             <span className="absolute inset-y-0 right-3 flex items-center text-gray-500">₽</span>
           </div>
           <div className="relative">
             <Input
               type="number"
-              placeholder={String(selectPrice.priceTo )}
-              value={String(selectPrice.priceTo || 1000)}
+              placeholder={String(price.priceTo)}
+              value={String(price.priceTo || 1000)}
               min={100}
               max={30000}
               className="pr-6"
-              onChange={(e) => setSelectPrice({ ...selectPrice, priceTo: Number(e.target.value) })}
+              onChange={(e) => updatePrice({ ...price, priceTo: Number(e.target.value) })}
             />
             <span className="absolute inset-y-0 right-3 flex items-center text-gray-500"> ₽</span>
           </div>
@@ -144,8 +125,8 @@ const Filters = () => {
           min={0}
           max={1000}
           step={10}
-          value={[selectPrice.priceFrom || 0, selectPrice.priceTo || 1000]}
-          onValueChange={([priceFrom, priceTo]) => setSelectPrice({ priceFrom, priceTo })}
+          value={[price.priceFrom || 0, price.priceTo || 1000]}
+          onValueChange={([priceFrom, priceTo]) => updatePrice({ priceFrom, priceTo })}
         />
         <CheckboxFiltersGroup limit={6} />
       </div>
@@ -159,9 +140,9 @@ const Filters = () => {
               value={item.text}
               key={item.id}
               className="rounded-[18px]"
-              checked={isChecked(item.id, selectedType)}
+              checked={isChecked(item.id, type)} // Проверяем в глобальном хранилище
               onCheckedChange={(checked) =>
-                handleCheckedChange(item.id, item.text, setSelectedType, checked)
+                handleCheckedChange(item.id, item.text, updateType, type, checked)
               }
             />
           ))}

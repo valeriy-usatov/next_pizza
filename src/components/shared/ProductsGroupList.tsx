@@ -6,15 +6,22 @@ import { useEffect, useRef } from 'react';
 import ProductCart from './ProductCart';
 import { useCategoryStore } from '@/store/category';
 import { useSearchStore } from '@/store/search';
+import { Product } from '@prisma/client';
 
 interface Props {
   title: string;
-  items: any[];
+  products: Product[];
   categoryId: number;
   className?: string;
   listClassName?: string;
 }
-const ProductsGroupList = ({ title, items = [], listClassName, categoryId, className }: Props) => {
+const ProductsGroupList = ({
+  title,
+  products = [],
+  listClassName,
+  categoryId,
+  className,
+}: Props) => {
   const setActiveCategoryId = useCategoryStore(
     (state) => state.setActiveId,
   ); /* из нашего стейта, вытаскиваем функцию setActiveId ,которую мы создали, эта функция будет при каждом вызове выполнять и обновлять ActiveId */
@@ -23,7 +30,7 @@ const ProductsGroupList = ({ title, items = [], listClassName, categoryId, class
     threshold: 0.4 /* событие будет срабатывать, когда 40% элемента будет видимо в области просмотра. */,
   });
   const { searchInput } = useSearchStore();
- 
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -55,12 +62,12 @@ const ProductsGroupList = ({ title, items = [], listClassName, categoryId, class
     <div className={className} id={title} ref={intersectionRef}>
       <h2 className="font-extrabold text-3xl mb-7">{title}</h2>
       <div className={`grid grid-cols-3 gap-12 ${listClassName}`}>
-        {items.map((product, index) => (
+        {products.map((product, index) => (
           <ProductCart
             key={product.id}
             id={product.id}
-            title={product.title}
-            price={product.items[0].price}
+            title={product.name}
+            // price={product.items[0].price}
             imageUrl={product.imageUrl}
           />
         ))}
