@@ -1,6 +1,6 @@
 'use client';
 
-import { allCategories } from '@/data/constant';
+// import { allCategories } from '@/data/constant';
 import { useCategoryStore } from '@/store/category';
 import { Category, Product } from '@prisma/client';
 import Link from 'next/link';

@@ -9,7 +9,7 @@ interface Props {
   size: 20 | 30 | 40;
 }
 
-const PizzaImage = ({ imageUrl, size = 30 }: Props) => {
+const PizzaImage = ({ imageUrl, size }: Props) => {
   const imageSize =
     size === 20
       ? 'w-[300px] h-[300px]'
@@ -17,6 +17,7 @@ const PizzaImage = ({ imageUrl, size = 30 }: Props) => {
       ? 'w-[400px] h-[400px]'
       : 'w-[500px] h-[500px]';
 
+     
   return (
     <div className="flex items-center justify-center flex-1 relative w-full">
       {imageUrl && (

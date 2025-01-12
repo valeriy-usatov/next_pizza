@@ -10,19 +10,15 @@ export const sortIems = [
   { name: 'алфавит', type: 'name', order: 'asc' },
 ];
 
-// export const pizzaSizeItems = {
-//   20: 'Маленькая',
-//   30: 'Средняя',
-//   40: 'Большая',
-// } as const;
-
 export const pizzaSizeItems: PiizaSizeItems[] = [
   { name: 'Маленькая', value: '20' },
-  { name: 'Средняя', value: '30', disabled: true },
+  { name: 'Средняя', value: '30' },
   { name: 'Большая', value: '40' },
 ];
 
-export const pizzaTypeItems = {
-  1: 'традиционное',
-  2: 'тонкое',
-} as const;
+export const pizzaTypeItems = [
+  {name: 'традиционное', value:'1'},
+  { name: 'тонкое',  value:'2'}
+]
+
+const newArray = [30,40]

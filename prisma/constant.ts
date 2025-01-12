@@ -20,13 +20,13 @@ export const ingredients = [
     id: 1,
     name: 'Сырный бортик',
     price: 179,
-    imageUrl:'/ingredients/Сырный бортик.webp',
+    imageUrl: '/ingredients/Сырный бортик.png',
   },
   {
     id: 2,
     name: 'Сливочная моцарелла',
     price: 79,
-    imageUrl:'/ingredients/Сливочная моцарелла.webp',
+    imageUrl: '/ingredients/Сливочная моцарелла.png',
   },
   {
     id: 3,
@@ -38,13 +38,13 @@ export const ingredients = [
     id: 4,
     name: 'Острый перец халапеньо',
     price: 59,
-    imageUrl: '/ingredients/Острый перец халапеньо.webp',
+    imageUrl: '/ingredients/Острый перец халапеньо.png',
   },
   {
     id: 5,
     name: 'Нежный цыпленок',
     price: 79,
-    imageUrl: '/ingredients/Нежный цыпленок.png',
+    imageUrl: '/ingredients/Nezhny_cyplenok.jpg',
   },
   {
     id: 6,
@@ -98,8 +98,7 @@ export const ingredients = [
     id: 14,
     name: 'Итальянские травы',
     price: 39,
-    imageUrl:
-      '/ingredients/Итальянские травы.png',
+    imageUrl: '/ingredients/Итальянские травы.png',
   },
   {
     id: 15,
@@ -117,8 +116,7 @@ export const ingredients = [
     id: 17,
     name: 'Митболы',
     price: 79,
-    imageUrl:
-      '/ingredients/Митболы.png',
+    imageUrl: '/ingredients/Митболы.png',
   },
 ];
 

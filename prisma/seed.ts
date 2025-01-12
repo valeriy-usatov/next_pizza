@@ -117,13 +117,13 @@ async function up() {
       },
       {
         productId: pizza2.id,
-        pizzaType: 2,
+        pizzaType: 1,
         price: randomDecimalNumber(190, 600),
         size: 30,
       },
       {
         productId: pizza2.id,
-        pizzaType: 2,
+        pizzaType: 1,
         price: randomDecimalNumber(190, 600),
         size: 40,
       },

@@ -48,7 +48,7 @@ const Filters = () => {
     });
   }, [filterQueryString, router]);
 
-  console.log('Filter Query String:', filterQueryString);
+  // console.log('Filter Query String:', filterQueryString);
 
   // выбран ли чекбокс, используем метод some() для массива
   const isChecked = (id: number, selectedItems: SelectedItem[]) =>

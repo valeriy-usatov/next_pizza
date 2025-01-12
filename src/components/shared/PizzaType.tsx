@@ -20,7 +20,7 @@ interface Props {
   size?: 20 | 30 | 40;
 }
 
-const PizzaSize = ({
+const PizzaType = ({
   items = [],
   onClick,
   value,
@@ -31,15 +31,15 @@ const PizzaSize = ({
   newpizzaSize,
 }: Props) => {
   const [activeSize, setActiveSize] = useState(0);
-  console.log("newpizzaSize", newpizzaSize)
+
   const handleClick = (item: Variant, index: number) => {
     setActiveSize(index); // Локальное обновление состояния активного размера
     setSize?.(Number(item.value));
   };
 
-  useEffect(() => {
-      setActiveSize(newpizzaSize===20 ? 0 : newpizzaSize===30 ? 1 : 2);
-  }, [size, type]);
+  // useEffect(() => {
+  //     setActiveSize(type ? 0 : (size===20 ? 0 : size===30 ? 1 : 2) );
+  // }, [size, type]);
 
   return (
     <div className={`${className} bg-gray-200 w-[420px] p-1 rounded-3xl`}>
@@ -59,4 +59,4 @@ const PizzaSize = ({
   );
 };
 
-export default PizzaSize;
+export default PizzaType;
