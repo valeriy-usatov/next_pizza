@@ -1,32 +1,80 @@
 import Image from 'next/image';
-import React from 'react';
-import { Minus, Plus } from 'lucide-react';
+import React, { useState } from 'react';
+import { Minus, Plus, Trash2 } from 'lucide-react';
 import { Button } from '../ui';
+import { Pizza, useCartStore } from '@/store/cart';
+import toast from 'react-hot-toast';
 
-const CartItem = () => {
+const CartItem = ({ pizza, index }: { pizza: Pizza; index: number }) => {
+  const { name, imageUrl, size, price, type, activeIngredients, count } = pizza;
+  const { updatePizzaCount, removePizza } = useCartStore();
+
+  const handleClickPlus = () => {
+    if (count < 10) {
+      updatePizzaCount(pizza.id, count + 1); // Передаём ID, а не name
+    }
+  };
+
+  const handlePizzaRemove = () => {
+    removePizza(pizza.id);
+    toast.success(`${name} удалена из корзины`);
+  };
+
+  const handleClickMinus = () => {
+    if (count > 1) {
+      updatePizzaCount(pizza.id, count - 1); // Передаём ID, а не name
+    }
+  };
+
+  const disabledMinus = count <= 1;
+  const disabledPlus = count >= 10;
   return (
-    <div className="-mx-6 bg-white p-8">
-      <div className="flex gap-6">
+    <div className="bg-white w-full p-8 relative">
+      <div
+        className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 cursor-pointer"
+        onClick={handlePizzaRemove}
+      >
+        <Trash2 size={16} />
+      </div>
+      <div className="flex gap-4">
         <div>
-          <Image src="/pizza/Сырная.webp" alt="Image" width={65} height={65} className="" />
+          <Image src={imageUrl} alt="Image" width={65} height={65} className="" />
         </div>
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-1 flex-col gap-3">
+          
           <div className="flex flex-col gap-1">
-            <h2 className="text-lg font-bold leading-6">Чизбургер-пицца</h2>
-            <p className="text-sm text-gray-400">Средняя 30 см, традиционное тесто</p>
+            <h2 className="text-lg font-bold leading-6">{name}</h2>
+            {!size && !type ? "" :(
+              <p className="text-sm text-gray-400">{`${
+                size === 20 ? 'Маленькая' : size === 30 ? 'Средняя' : size === 40 ? 'Большая' : ''
+              } ${size} см, ${
+                type === 1 ? 'тонкое тесто' : type === 2 ? 'традиционное тесто' : ""
+              } ${activeIngredients?.length ? `+ ${activeIngredients.join(', ')}` : ''}   `}</p>
+            )}
+            
           </div>
           <div className="border border-b-neutral-200"></div>
           <div className="flex justify-between items-center">
-            <div className='flex gap-3 items-center'>
-              <Button variant="outline" className='p-0 hover:bg-primary hover:text-white disabled:bg-white disabled:border-gray-400 disabled:text-gray-400 h-8 w-8 rounded-[10px]'>
+            <div className="flex gap-3 items-center">
+              <Button
+                onClick={handleClickMinus}
+                variant="outline"
+                disabled={disabledMinus}
+                className="p-0 hover:bg-primary hover:text-white disabled:bg-white disabled:border-gray-400 disabled:text-gray-400 h-8 w-8 rounded-[10px]"
+              >
                 <Minus className="" />
-                </Button>
-                <div>15</div>
-                <Button variant="outline" className='p-0 hover:bg-primary hover:text-white disabled:bg-white disabled:border-gray-400 disabled:text-gray-400 h-8 w-8 rounded-[10px]' >
+              </Button>
+              <div>{count}</div>
+              <Button
+                onClick={handleClickPlus}
+                variant="outline"
+                disabled={disabledPlus}
+                className="p-0 hover:bg-primary hover:text-white disabled:bg-white disabled:border-gray-400 disabled:text-gray-400 h-8 w-8 rounded-[10px]"
+              >
                 <Plus className="h4 w-4" />
-                </Button>
+              </Button>
             </div>
-            <div className="font-bold">1280 ₽</div>
+            <div className="font-bold">{price * count} ₽</div>
           </div>
         </div>
       </div>

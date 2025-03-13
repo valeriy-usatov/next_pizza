@@ -1,3 +1,4 @@
+
 import Image from 'next/image';
 import React from 'react';
 import Link from 'next/link';
@@ -29,7 +30,9 @@ const Header = () => {
             Войти
           </Button>
           <div>
-            <CartSheet/>
+            <CartSheet>
+            <CartButton />
+            </CartSheet>
           </div>
         </div>
       </Container>

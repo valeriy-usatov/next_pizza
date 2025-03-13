@@ -33,12 +33,9 @@ const ProductPage = async ({ params }: { params: { id: string } }) => {
             <p className="text-sm text-[#373737] opacity-60">25 см, традиционное тесто 25, 380 г</p>
           </div>
           {/* PizzaSizes */}
-          <PizzaSize
-            value="20"
-            items={pizzaSizeItems}
-          />
+          <PizzaSize value="20" items={pizzaSizeItems} />
 
-          <Button>Добавить в корзину за 799₽</Button>
+          <Button> за 799₽</Button>
         </div>
       </div>
     </Container>

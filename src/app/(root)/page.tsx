@@ -12,10 +12,15 @@ import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 
 import { prisma } from '../../../prisma/prismaClient';
-import { getCategories } from '@/lib/getCategories';
+import { findPizzas, GetSearchParams } from '@/lib/findPizzas';
+import Example from '@/components/shared/Example';
+import { Category, Product } from '@prisma/client';
 
-export default async function Home() {
-  const categories = await getCategories();
+type CategoryProps = {};
+export type CategoryWithProducts = Category & { products: Product[] };
+
+export default async function Home({ searchParams }: { searchParams: GetSearchParams }) {
+  const categories = await findPizzas(searchParams);
 
   return (
     <>
@@ -30,7 +35,7 @@ export default async function Home() {
           {/* СПИСОК ТОВАРОВ */}
           <div className="w-3/4">
             {categories.map(
-              (category) =>
+              (category: CategoryWithProducts) =>
                 category.products.length > 0 && (
                   <ProductsGroupList
                     key={category.id}
@@ -43,7 +48,6 @@ export default async function Home() {
                 ),
             )}
           </div>
-          {/* <Counter/> */}
         </div>
       </Container>
     </>

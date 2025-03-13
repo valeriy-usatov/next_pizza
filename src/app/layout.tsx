@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Nunito } from 'next/font/google';
+import toast, { Toaster } from 'react-hot-toast';
 
 import './globals.css';
 
@@ -27,6 +28,7 @@ export default function MainLayout({
         </head>
       <body className={`${nunito.variable}  antialiased`}>
         {children}
+        <Toaster />
       </body>
     </html>
   );

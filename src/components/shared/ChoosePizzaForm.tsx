@@ -9,13 +9,17 @@ import { pizzaSizeItems, pizzaTypeItems } from '@/data/constant';
 import { Ingredient, ProductItem } from '@prisma/client';
 import IngredientItem from './IngredientItem';
 import PizzaType from './PizzaType';
+import { useCartStore } from '@/store/cart';
+import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 
 interface Props {
   imageUrl: string;
   name: string;
   id: number;
-  ingredients: Ingredient[];
   items?: ProductItem[];
+  ingredients: Ingredient[];
+
   loading?: boolean;
   onSubmit?: (itemId: number, ingredients: number[]) => void;
   className?: string;
@@ -35,16 +39,17 @@ const ChoosePizzaForm = ({
 }: Props) => {
   const [size, setSize] = useState<PizzaSize>(20);
   const [type, setType] = useState<PizzaType>(1);
-  const [activeIngredients, setActiveIngredients] = useState<number[]>([]);
+  const [activeIngredients, setActiveIngredients] = useState<string[]>([]);
   const [totalPriceIngredients, setTotalPrice] = useState<number[]>([]);
   const [productItem, setproductItem] = useState<ProductItem[]>([]);
   const [productType, setproductType] = useState<PizzaType>(2);
-
-  console.log('activeIngredients', activeIngredients);
+  const router = useRouter();
+  // Добавление пиццы в хранилище
+  const addPizza = useCartStore((state) => state.addPizza);
 
   useEffect(() => {
     setTotalPrice(
-      ingredients.filter((item) => activeIngredients.includes(item.id)).map((item) => item.price),
+      ingredients.filter((item) => activeIngredients.includes(item.name)).map((item) => item.price),
     );
   }, [activeIngredients, size]);
 
@@ -56,7 +61,7 @@ const ChoosePizzaForm = ({
           throw new Error('Failed to fetch');
         }
         const data = await res.json();
-        setproductItem(data); //
+        setproductItem(data);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -74,43 +79,60 @@ const ChoosePizzaForm = ({
   const textDetaills = '25 см, традиционное тесто 25, 380 г';
   const totalPrice = newItem?.price || 0;
 
-  const toggleIngredient = (id: number) => {
+  const toggleIngredient = (name: string) => {
     setActiveIngredients(
       (prev) =>
-        prev.includes(id)
-          ? prev.filter((ingredientId) => ingredientId !== id) // Убираем ID из массива
-          : [...prev, id], // Добавляем ID в массив
+        prev.includes(name)
+          ? prev.filter((ingredientId) => ingredientId !== name) // Убираем ID из массива
+          : [...prev, name], // Добавляем ID в массив
     );
   };
 
   const hanleClickAdd = () => {
-    console.log({
+    if (!newItem) {
+      return;
+    }
+
+    const newPizza = {
+      id: newItem.id,
+      productItemId: newItem.id, // ID варианта пиццы для сервера
+      ingredients: activeIngredients
+        .map((name) => {
+          const ingredient = ingredients.find((item) => item.name === name);
+          return ingredient ? ingredient : null; // Возвращаем сам объект ингредиента
+        })
+        .filter((ingredient) => ingredient !== null), // Убираем null значения
+
+      // Локальные данные для отображения в хранилище
+      name,
+      imageUrl,
       size,
       type,
+      count: 1,
+      price: newItem.price + totalPriceIngredients.reduce((a, b) => a + b, 0),
       activeIngredients,
-    });
+    };
+
+    addPizza(newPizza); // Возможно вы забыли вызвать функцию addPizza
+    toast.success( `${name} добавлена в корзину`);
+
+    router.back();
   };
 
   const availablePizzaSizes = productItem.filter(
     (item) => item.productId === id && item.pizzaType == type,
   );
 
-  // console.log('availablePizzaSizes', availablePizzaSizes);
-  // создаем массив, в котором исключаем размеры размеры size
   const newpizzaSize = [...availablePizzaSizes.map((item, index) => item.size)];
-  // console.log('newpizzaSize', newpizzaSize[0]);
 
   const updatedPizzaSizeItems = pizzaSizeItems.map((item) => ({
     ...item,
     ...(newpizzaSize.includes(Number(item.value)) ? {} : { disabled: true }),
   }));
 
-  // console.log(updatedPizzaSizeItems);
-
   useEffect(() => {
-    const availableSize = updatedPizzaSizeItems.find((item,index) => !item.disabled);
+    const availableSize = updatedPizzaSizeItems.find((item) => !item.disabled);
     setSize(Number(availableSize?.value) as PizzaSize);
-    console.log(availableSize);
   }, [type]);
 
   return (
@@ -129,7 +151,6 @@ const ChoosePizzaForm = ({
           size={size}
           newpizzaSize={newpizzaSize[0]}
           type={type}
-
         />
         <PizzaType
           value={String(type)}
@@ -140,14 +161,14 @@ const ChoosePizzaForm = ({
 
         <div className="bg-gray-50 p-5 rounded-md h-[420px] overflow-auto scrollbar mt-5">
           <div className="grid grid-cols-3 gap-3">
-            {ingredients.map((ingredient, index) => (
+            {ingredients.map((ingredient) => (
               <IngredientItem
                 key={ingredient.id}
                 name={ingredient.name}
                 price={ingredient.price}
                 imageUrl={ingredient.imageUrl}
-                onClick={() => toggleIngredient(ingredient.id)}
-                active={activeIngredients.includes(ingredient.id)} // Проверяем активен ли ингредиент
+                onClick={() => toggleIngredient(ingredient.name)}
+                active={activeIngredients.includes(ingredient.name)} // Проверяем активен ли ингредиент
               />
             ))}
           </div>

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import toast, { Toaster } from 'react-hot-toast';
 import { Suspense } from 'react';
 import Header from '@/components/shared/Header';
 

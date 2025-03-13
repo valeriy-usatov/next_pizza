@@ -31,7 +31,8 @@ const PizzaSize = ({
   newpizzaSize,
 }: Props) => {
   const [activeSize, setActiveSize] = useState(0);
-  console.log("newpizzaSize", newpizzaSize)
+
+
   const handleClick = (item: Variant, index: number) => {
     setActiveSize(index); // Локальное обновление состояния активного размера
     setSize?.(Number(item.value));
@@ -39,7 +40,7 @@ const PizzaSize = ({
 
   useEffect(() => {
       setActiveSize(newpizzaSize===20 ? 0 : newpizzaSize===30 ? 1 : 2);
-  }, [size, type]);
+  }, [newpizzaSize]);
 
   return (
     <div className={`${className} bg-gray-200 w-[420px] p-1 rounded-3xl`}>

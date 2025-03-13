@@ -1,9 +1,13 @@
-import React from 'react';
-import PizzaImage from './PizzaImage';
+import { useCartStore } from '@/store/cart';
+import { useRouter } from 'next/navigation';
 import { Button } from '../ui';
 import Image from 'next/image';
+import { useEffect, useState } from 'react';
+import { ProductItem } from '@prisma/client';
+import toast from 'react-hot-toast';
 
 interface Props {
+  id: number;
   imageUrl: string;
   name: string;
   loading?: boolean;
@@ -11,9 +15,49 @@ interface Props {
   className?: string;
 }
 
-const ChooseProductForm = ({ name, imageUrl, loading, onSubmit, className }: Props) => {
-  const textDetaills = '25 см, традиционное тесто 25, 380 г';
-  const totalPrice = 350;
+const ChooseProductForm = ({ name, imageUrl, loading, onSubmit, className, id }: Props) => {
+  const addPizza = useCartStore((state) => state.addPizza);
+  const [productItem, setproductItem] = useState<ProductItem[]>([]);
+  const router = useRouter();
+  const totalPrice = productItem.find((item) => item.productId === id)?.price || 0;
+
+  const newItem = productItem.find((item) => item.productId === id);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/productItem`);
+        if (!res.ok) {
+          throw new Error('Failed to fetch');
+        }
+        const data = await res.json();
+        setproductItem(data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const hanleClickAdd = () => {
+    const newPizza = {
+      id: id,
+      productItemId: newItem?.id,
+      name,
+      imageUrl,
+      count: 1,
+      price: totalPrice,
+    };
+
+    addPizza(newPizza);
+    toast.success(`${name} добавлена в корзину`);
+
+    router.back();
+  };
+
+  // const textDetaills = '25 см, традиционное тесто 25, 380 г';
+
   return (
     <div className="flex flex-1">
       <div className="flex items-center justify-center flex-1 relative w-full">
@@ -25,10 +69,13 @@ const ChooseProductForm = ({ name, imageUrl, loading, onSubmit, className }: Pro
           className="relative left-2 top-2 transition-all z-10 duration-300 w-[350px] h-[350px]"
         />
       </div>
-      <div className="w-[490px] bg-[#f7f6f5] p-7">
+      <div className="flex flex-col w-[490px] bg-[#f7f6f5] p-10">
         <h2 className="text-4xl font-extrabold tracking-[-0.01em]">{name}</h2>
-        <p className="text-gray-400">{textDetaills}</p>
-        <Button className="h-[55px] px-10 text-base rounded-[18px] w-full mt-10">
+        <p className="text-gray-400"></p>
+        <Button
+          className="mt-auto h-[55px] px-10 text-base rounded-[18px] w-full"
+          onClick={hanleClickAdd}
+        >
           Добавить в корзину за {totalPrice} ₽
         </Button>
       </div>

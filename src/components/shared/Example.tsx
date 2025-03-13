@@ -1,28 +1,20 @@
-'use client'
+"use client"
+import { useEffect, useLayoutEffect, useState } from "react";
 
-import React, { useEffect, useState } from 'react';
+export default function Example() {
+  const [value, setValue] = useState("Исходное значение");
 
-const Example = () => {
-  const [time, setTime] = useState(0);
-    const [showTimer, setShowTimer] = useState(true);
+  useEffect(() => {
+    setValue("useEffect изменил");
+    console.log("useEffect сработал");
+  }, []);
 
-    useEffect(() => {
-        const timer = setInterval(() => {
-            setTime((prev) => prev + 1);
-        }, 1000);
+  useLayoutEffect(() => {
+    setValue("useLayoutEffect изменил");
+    console.log("useLayoutEffect сработал");
+  }, []);
 
-        return () => {
-            clearInterval(timer); // Срабатывает при размонтировании
-            console.log('Таймер очищен');
-        };
-    }, []);
-
-    return (
-        <div>
-            <h1>Время: {time} секунд</h1>
-            <button onClick={() => setShowTimer(false)}>Удалить таймер</button>
-        </div>
-    );
-};
-
-export default Example;
+  return (
+  <p>значение:{value}</p>
+  );
+}

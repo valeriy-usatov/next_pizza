@@ -28,7 +28,7 @@ const ChooseProductModal = ({ product, className }: Props) => {
             id={product.id}
           />
         ) : (
-          <ChooseProductForm imageUrl={product.imageUrl} name={product.name} />
+          <ChooseProductForm imageUrl={product.imageUrl} name={product.name} id={product.id} />
         )}
       </DialogContent>
     </Dialog>

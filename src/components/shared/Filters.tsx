@@ -30,16 +30,23 @@ const Filters = () => {
     return {
       priceFrom: price.priceFrom,
       priceTo: price.priceTo,
-      size: size.map((item) => item.name),
+      size: size.map((item) => item.name.replace(" см", "")), // Убираем " см"
       type: type.map((item) => item.name),
       ingredients: filterIngredients.map((item) => item.name),
     };
   }, [price, type, size, filterIngredients]);
 
+  
+  
   // Преобразование фильтров в строку запроса
   const filterQueryString = useMemo(() => {
-    return qs.stringify(filter, { arrayFormat: 'comma' });
+    return qs.stringify(filter, {
+      arrayFormat: 'comma',
+      encode: true, // Включаем правильное кодирование
+      encodeValuesOnly: true, // Кодируем только значения, а не ключи
+    });
   }, [filter]);
+  
 
   useEffect(() => {
     // Обновляем URL при изменении строки запроса
@@ -47,8 +54,6 @@ const Filters = () => {
       scroll: false /* отмена скрола */,
     });
   }, [filterQueryString, router]);
-
-  // console.log('Filter Query String:', filterQueryString);
 
   // выбран ли чекбокс, используем метод some() для массива
   const isChecked = (id: number, selectedItems: SelectedItem[]) =>

@@ -223,7 +223,7 @@ async function main() {
     await down();
     await up();
   } catch (e) {
-    console.log(e);
+   
   }
 }
 
