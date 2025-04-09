@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Sheet,
   SheetClose,
@@ -64,7 +64,7 @@ type Pizza = {
 const CartSheet: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Достаём данные и действия из хранилища
   const { pizzas, setCart, totalAmount, clearCart } = useCartStore();
-  
+  const [redirecting, setRedirecting] = useState(false)
 
   useEffect(() => {
     const fetchCart = async () => {
@@ -102,7 +102,7 @@ const CartSheet: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <Sheet>
       <SheetTrigger asChild>{children}</SheetTrigger>
-      <SheetContent className="flex flex-col  pb-0 bg-[#F4F1EE]">
+      <SheetContent className="flex flex-col  pb-0 h-screen bg-[#F4F1EE]">
         {pizzas.length > 0 && (
           <SheetHeader>
             <SheetTitle>
@@ -114,7 +114,7 @@ const CartSheet: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         {/* {items} */}
 
         {pizzas.length === 0 ? (
-          <div className="flex flex-1 items-center justify-center mx-auto my-28">
+          <div className="flex flex-1 items-center justify-center  mt-28">
             <CartEmpty />
           </div>
         ) : (
@@ -136,10 +136,10 @@ const CartSheet: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 <span className="font-bold text-lg">{totalAmount()} </span>
               </div>
 
-              <Link href="/cart">
+              <Link href="/checkout">
                 <Button
-                  // onClick={() => setRedirecting(true)}
-                  // loading={loading || redirecting}
+                  onClick={() => setRedirecting(true)}
+                  loading={redirecting}
                   type="submit"
                   className="w-full h-12 text-base"
                 >

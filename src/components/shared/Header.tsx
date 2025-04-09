@@ -9,7 +9,13 @@ import SearchInput from './SearchInput';
 import CartButton from './CartButton';
 import CartSheet from './CartSheet';
 
-const Header = () => {
+
+interface Props {
+  isHasSearch?: boolean;
+  isHasCart?: boolean;
+  className?: string;
+}
+const Header:React.FC <Props> = ({isHasSearch = true , isHasCart = true, className}) => {
   return (
     <header className="border-b">
       <Container className="flex  justify-between gap-10 items-center py-10 ">
@@ -22,18 +28,22 @@ const Header = () => {
           </div>
         </Link>
         {/* Центр */}
-        <SearchInput />
+        { isHasSearch && 
+        <SearchInput /> }
         {/* Правая часть */}
         <div className="flex gap-4 ml-7">
           <Button variant="outline" className="flex items-center gap-2">
             <User size={16} />
             Войти
           </Button>
+          {isHasCart && (
           <div>
             <CartSheet>
             <CartButton />
             </CartSheet>
           </div>
+            
+            )}
         </div>
       </Container>
     </header>

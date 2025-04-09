@@ -6,13 +6,15 @@ import { useEffect, useRef, useState } from 'react';
 import ProductCart from './ProductCart';
 import { useCategoryStore } from '@/store/category';
 import { useSearchStore } from '@/store/search';
-import { Product, ProductItem } from '@prisma/client';
+import { Ingredient, Product, ProductItem } from '@prisma/client';
 
+type ProductWithIngredients = Product & { ingredients: Ingredient[] };
 interface Props {
   title: string;
-  products: Product[];
+  products: ProductWithIngredients[];
   categoryId: number;
   className?: string;
+  ingredients?: Ingredient[];
   listClassName?: string;
 }
 const ProductsGroupList = ({
@@ -20,6 +22,7 @@ const ProductsGroupList = ({
   products = [],
   listClassName,
   categoryId,
+  ingredients,
   className,
 }: Props) => {
   const setActiveCategoryId = useCategoryStore(
@@ -31,7 +34,7 @@ const ProductsGroupList = ({
   });
   const { searchInput } = useSearchStore();
   const [productPrice, setProductPrice] = useState<ProductItem[]>([]);
-  
+  console.log(ingredients);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -77,7 +80,6 @@ const ProductsGroupList = ({
     fetchData();
   }, []);
 
-
   return (
     <div className={className} id={title} ref={intersectionRef}>
       <h2 className="font-extrabold text-3xl mb-7">{title}</h2>
@@ -91,6 +93,7 @@ const ProductsGroupList = ({
               (productPrice.find((item) => item.productId === product.id)?.price as number) || 0
             }
             imageUrl={product.imageUrl}
+            ingredients={product?.ingredients as Ingredient[]}
           />
         ))}
       </div>

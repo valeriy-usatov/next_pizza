@@ -1,3 +1,5 @@
+'use client';
+
 import { useCartStore } from '@/store/cart';
 import { useRouter } from 'next/navigation';
 import { Button } from '../ui';

@@ -9,11 +9,28 @@ import PizzaImage from '@/components/shared/PizzaImage';
 import PizzaSize from '@/components/shared/PizzaSize';
 import { prisma } from '../../../../../prisma/prismaClient';
 import { pizzaSizeItems } from '@/data/constant';
+import ChoosePizzaForm from '@/components/shared/ChoosePizzaForm';
+import ChooseProductForm from '@/components/shared/ChooseProductForm';
 
 const ProductPage = async ({ params }: { params: { id: string } }) => {
+  
+
   const product = await prisma.product.findUnique({
     where: {
       id: Number(params.id),
+    },
+    include: {
+      ingredients: true,
+      category: {
+        include: {
+          products: {
+            include: {
+              items: true,
+            },
+          },
+        },
+      },
+      items:true,
     },
   });
   if (!product) {
@@ -21,23 +38,21 @@ const ProductPage = async ({ params }: { params: { id: string } }) => {
     return notFound();
   }
 
+  const isPizzaForm = Boolean(product.items[0].pizzaType);
   const size = 30;
 
   return (
     <Container className="mt-10">
-      <div className="flex gap-12">
-        <PizzaImage imageUrl={product.imageUrl} size={size} name={product.name} />
-        <div className="flex flex-col gap-6 w-[490px] bg-[#FCFCFC] p-7">
-          <div className="flex flex-col gap-3">
-            <h2 className="text-4xl font-extrabold tracking-[-0.01em]">{product?.name}</h2>
-            <p className="text-sm text-[#373737] opacity-60">25 см, традиционное тесто 25, 380 г</p>
-          </div>
-          {/* PizzaSizes */}
-          <PizzaSize value="20" items={pizzaSizeItems} />
-
-          <Button> за 799₽</Button>
-        </div>
-      </div>
+      {isPizzaForm ? (
+          <ChoosePizzaForm
+            imageUrl={product.imageUrl}
+            name={product.name}
+            ingredients={product.ingredients}
+            id={product.id}
+          />
+        ) : (
+          <ChooseProductForm imageUrl={product.imageUrl} name={product.name} id={product.id} />
+        )}
     </Container>
   );
 };

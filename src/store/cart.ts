@@ -11,8 +11,8 @@ export type Pizza = {
   price: number;
   count: number;
   activeIngredients?: string[];
-  productItemId: number | undefined; 
-  ingredients?: Ingredient[]; 
+  productItemId: number | undefined;
+  ingredients?: Ingredient[];
 };
 
 // Типы для состояния и действий хранилища
@@ -32,7 +32,6 @@ export const useCartStore = create<CartState>()(
       pizzas: [],
 
       setCart: (pizzas) => set({ pizzas }),
-
       addPizza: async (pizza) => {
         try {
           const { productItemId, ingredients, ...localPizzaData } = pizza;
@@ -45,11 +44,54 @@ export const useCartStore = create<CartState>()(
 
           if (!res.ok) throw new Error('Ошибка при добавлении товара в корзину');
 
-          const addedPizza = await res.json();
+          const updatedCart = await res.json();
 
-          set((state) => ({
-            pizzas: [...state.pizzas, { ...addedPizza, ...localPizzaData }],
-          }));
+          // Найти товар из корзины по productItemId и ингредиентам
+          const matchedItem = updatedCart.items.find((item: any) => {
+            if (item.productItemId !== productItemId) return false;
+
+            const ingIdsFromStore = (ingredients ?? []).map((i) => i.id).sort();
+            const ingIdsFromServer = item.ingredients.map((i: any) => i.id).sort();
+
+            return (
+              ingIdsFromStore.length === ingIdsFromServer.length &&
+              ingIdsFromStore.every((id, index) => id === ingIdsFromServer[index])
+            );
+          });
+
+          if (!matchedItem) return;
+
+          set((state) => {
+            const existingPizza = state.pizzas.find((p) => {
+              if (p.productItemId !== productItemId) return false;
+
+              const localIng = (p.ingredients ?? []).map((i) => i.id).sort();
+              const newIng = (ingredients ?? []).map((i) => i.id).sort();
+
+              return (
+                localIng.length === newIng.length &&
+                localIng.every((id, index) => id === newIng[index])
+              );
+            });
+
+            if (existingPizza) {
+              // Обновляем количество, если уже была
+              return {
+                pizzas: state.pizzas.map((p) =>
+                  p.productItemId === productItemId &&
+                  JSON.stringify((p.ingredients ?? []).map((i) => i.id).sort()) ===
+                    JSON.stringify((ingredients ?? []).map((i) => i.id).sort())
+                    ? { ...p, count: p.count + 1 }
+                    : p,
+                ),
+              };
+            } else {
+              // Добавляем, если новой не было
+              return {
+                pizzas: [...state.pizzas, { ...localPizzaData, ...matchedItem, count: 1 }],
+              };
+            }
+          });
         } catch (error) {
           console.error('Ошибка при добавлении товара:', error);
         }
@@ -60,19 +102,17 @@ export const useCartStore = create<CartState>()(
           const state = get();
           const pizza = state.pizzas.find((p) => p.id === id);
           if (!pizza) return;
-      
+
           const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/cart`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ productItemId: pizza.productItemId, quantity: newCount }),
           });
-      
+
           if (!res.ok) throw new Error('Ошибка при обновлении количества');
-      
+
           set((state) => ({
-            pizzas: state.pizzas.map((p) => 
-              p.id === id ? { ...p, count: newCount } : p
-            ),
+            pizzas: state.pizzas.map((p) => (p.id === id ? { ...p, count: newCount } : p)),
           }));
         } catch (error) {
           console.error('Ошибка обновления количества:', error);

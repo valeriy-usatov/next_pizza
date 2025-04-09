@@ -14,14 +14,16 @@ import Image from 'next/image';
 import { prisma } from '../../../prisma/prismaClient';
 import { findPizzas, GetSearchParams } from '@/lib/findPizzas';
 import Example from '@/components/shared/Example';
-import { Category, Product } from '@prisma/client';
+import { Category, Ingredient, Product } from '@prisma/client';
 
 type CategoryProps = {};
-export type CategoryWithProducts = Category & { products: Product[] };
+// export type CategoryWithProducts = Category & { products: Product[] } ;
+export type ProductWithIngredients = Product & { ingredients: Ingredient[] };
+export type CategoryWithProducts = Category & { products: ProductWithIngredients[] };
 
 export default async function Home({ searchParams }: { searchParams: GetSearchParams }) {
   const categories = await findPizzas(searchParams);
-
+  console.log(categories);
   return (
     <>
       <Container className="mt-10">
@@ -41,6 +43,7 @@ export default async function Home({ searchParams }: { searchParams: GetSearchPa
                     key={category.id}
                     title={category.name}
                     products={category.products}
+                    // ingredients={category.products[0].ingredients}
                     listClassName=""
                     categoryId={category.id}
                     className="mb-16"
