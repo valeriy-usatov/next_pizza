@@ -13,9 +13,9 @@ export type Pizza = {
   activeIngredients?: string[];
   productItemId: number | undefined;
   ingredients?: Ingredient[];
+  
 };
 
-// Типы для состояния и действий хранилища
 type CartState = {
   pizzas: Pizza[];
   setCart: (pizzas: Pizza[]) => void;
@@ -24,6 +24,7 @@ type CartState = {
   removePizza: (id: number) => void;
   clearCart: () => void;
   totalAmount: () => number;
+  loading?: boolean;
 };
 
 export const useCartStore = create<CartState>()(
@@ -32,10 +33,18 @@ export const useCartStore = create<CartState>()(
       pizzas: [],
 
       setCart: (pizzas) => set({ pizzas }),
-      addPizza: async (pizza) => {
-        try {
-          const { productItemId, ingredients, ...localPizzaData } = pizza;
 
+      addPizza: async (pizza) => {
+        const { productItemId, ingredients, ...localPizzaData } = pizza;
+
+        // Устанавливаем loading = true
+        set((state) => ({
+          pizzas: state.pizzas.map((p) =>
+            p.productItemId === productItemId ? { ...p, loading: true } : p
+          ),
+        }));
+
+        try {
           const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/cart`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -46,7 +55,6 @@ export const useCartStore = create<CartState>()(
 
           const updatedCart = await res.json();
 
-          // Найти товар из корзины по productItemId и ингредиентам
           const matchedItem = updatedCart.items.find((item: any) => {
             if (item.productItemId !== productItemId) return false;
 
@@ -75,29 +83,42 @@ export const useCartStore = create<CartState>()(
             });
 
             if (existingPizza) {
-              // Обновляем количество, если уже была
               return {
                 pizzas: state.pizzas.map((p) =>
                   p.productItemId === productItemId &&
                   JSON.stringify((p.ingredients ?? []).map((i) => i.id).sort()) ===
                     JSON.stringify((ingredients ?? []).map((i) => i.id).sort())
-                    ? { ...p, count: p.count + 1 }
-                    : p,
+                    ? { ...p, count: p.count + 1, loading: false }
+                    : p
                 ),
               };
             } else {
-              // Добавляем, если новой не было
               return {
-                pizzas: [...state.pizzas, { ...localPizzaData, ...matchedItem, count: 1 }],
+                pizzas: [
+                  ...state.pizzas,
+                  { ...localPizzaData, ...matchedItem, count: 1, loading: false },
+                ],
               };
             }
           });
         } catch (error) {
           console.error('Ошибка при добавлении товара:', error);
+          // Сбрасываем loading даже в случае ошибки
+          set((state) => ({
+            pizzas: state.pizzas.map((p) =>
+              p.productItemId === productItemId ? { ...p, loading: false } : p
+            ),
+          }));
         }
       },
 
       updatePizzaCount: async (id, newCount) => {
+        set((state) => ({
+          pizzas: state.pizzas.map((p) =>
+            p.id === id ? { ...p, loading: true } : p
+          ),
+        }));
+
         try {
           const state = get();
           const pizza = state.pizzas.find((p) => p.id === id);
@@ -112,14 +133,27 @@ export const useCartStore = create<CartState>()(
           if (!res.ok) throw new Error('Ошибка при обновлении количества');
 
           set((state) => ({
-            pizzas: state.pizzas.map((p) => (p.id === id ? { ...p, count: newCount } : p)),
+            pizzas: state.pizzas.map((p) =>
+              p.id === id ? { ...p, count: newCount, loading: false } : p
+            ),
           }));
         } catch (error) {
           console.error('Ошибка обновления количества:', error);
+          set((state) => ({
+            pizzas: state.pizzas.map((p) =>
+              p.id === id ? { ...p, loading: false } : p
+            ),
+          }));
         }
       },
 
-      removePizza: async (id: number) => {
+      removePizza: async (id) => {
+        set((state) => ({
+          pizzas: state.pizzas.map((p) =>
+            p.id === id ? { ...p, loading: true } : p
+          ),
+        }));
+
         try {
           const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/cart`, {
             method: 'DELETE',
@@ -140,7 +174,12 @@ export const useCartStore = create<CartState>()(
             pizzas: state.pizzas.filter((pizza) => pizza.id !== id),
           }));
         } catch (error) {
-          console.error('Error removing item:', error);
+          console.error('Ошибка при удалении товара:', error);
+          set((state) => ({
+            pizzas: state.pizzas.map((p) =>
+              p.id === id ? { ...p, loading: false } : p
+            ),
+          }));
         }
       },
 
@@ -148,6 +187,6 @@ export const useCartStore = create<CartState>()(
 
       totalAmount: () => get().pizzas.reduce((sum, pizza) => sum + pizza.price * pizza.count, 0),
     }),
-    { name: 'cart-storage' },
-  ),
+    { name: 'cart-storage' }
+  )
 );

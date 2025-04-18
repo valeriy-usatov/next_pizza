@@ -101,17 +101,17 @@ model CartItem {
 model Order {
   id          Int         @id @default(autoincrement())
   user        User?       @relation(fields: [userId], references: [id])
-  userId      Int         @unique
+  userId      Int?        @unique
   token       String
   totalAmount Int
   status      OrderStatus
   paymentId   String?
-  products    Json[] // список товаров
+  products    Json // список товаров
   fullName    String
   email       String
   phone       String
   address     String
-  comment     String
+  comment     String?
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 }
