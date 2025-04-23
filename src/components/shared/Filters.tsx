@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import FilterCheckbox from './FilterCheckbox';
 import { Input } from '../ui';
 import { RangeSlider } from './RangeSlider';
@@ -21,6 +21,7 @@ type SelectedItem = {
 
 const Filters = () => {
   const router = useRouter();
+  const isMounted = useRef(false);
 
   const { price, size, type, filterIngredients, updatePrice, updateSize, updateType } =
     useFiltersStore();
@@ -30,14 +31,12 @@ const Filters = () => {
     return {
       priceFrom: price.priceFrom,
       priceTo: price.priceTo,
-      size: size.map((item) => item.name.replace(" см", "")), // Убираем " см"
+      size: size.map((item) => item.name.replace(' см', '')), // Убираем " см"
       type: type.map((item) => item.name),
       ingredients: filterIngredients.map((item) => item.name),
     };
   }, [price, type, size, filterIngredients]);
 
-  
-  
   // Преобразование фильтров в строку запроса
   const filterQueryString = useMemo(() => {
     return qs.stringify(filter, {
@@ -46,13 +45,16 @@ const Filters = () => {
       encodeValuesOnly: true, // Кодируем только значения, а не ключи
     });
   }, [filter]);
-  
 
   useEffect(() => {
-    // Обновляем URL при изменении строки запроса
-    router.push(`?${filterQueryString}`, {
-      scroll: false /* отмена скрола */,
-    });
+    if (isMounted.current) {
+      // Обновляем URL при изменении строки запроса
+      router.push(`?${filterQueryString}`, {
+        scroll: false /* отмена скрола */,
+      });
+      console.log('filter', filter);
+    }
+    isMounted.current= true;
   }, [filterQueryString, router]);
 
   // выбран ли чекбокс, используем метод some() для массива

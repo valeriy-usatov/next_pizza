@@ -16,12 +16,12 @@ interface Props {
 }
 
 const ProductCart = ({ id, title, price = 500, imageUrl, className, ingredients }: Props) => {
-  console.log("ingredients", ingredients)
+ 
   return (
     <div className={className}>
       <Link href={`/product/${id}`}>
-        <div className="flex justify-center p-6 bg-secondary rounded-lg h-[260px]">
-          <Image src={imageUrl} alt="Image" width={215} height={215} />
+        <div className="flex justify-center p-6 bg-secondary rounded-lg">
+          <Image src={imageUrl} alt="Image" width={215} height={215} style={{ height: 'auto' }}/>
         </div>
         <h2 className="font-bold mb-1 mt-3">{title}</h2>
         <p className="text-sm text-gray-400">

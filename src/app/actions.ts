@@ -2,11 +2,13 @@
 
 import { CheckoutFormValues } from '@/components/shared/constants/FormSchema';
 import { prisma } from '../../prisma/prismaClient';
-import { OrderStatus } from '@prisma/client';
+import { OrderStatus, Prisma } from '@prisma/client';
 import { cookies } from 'next/headers';
 import { sendEmail } from '@/lib/sendEmail';
 import { PayOrderTemplate } from '@/components/shared/email-template/PayOrder';
 import { createPayment } from '@/lib/createPayment';
+import { getUserSession } from '@/lib/getUserSession';
+import { hashSync } from 'bcrypt';
 
 export async function createOrder(data: CheckoutFormValues) {
   try {
@@ -99,17 +101,47 @@ export async function createOrder(data: CheckoutFormValues) {
     });
 
     const paymentUrl = paymentData.confirmation.confirmation_url; /* перенаправляет на наш платежный сервис */
-    // await sendEmail(
-    //   data.email,
-    //   'Pizza / Оплатите заказ #' + order.id,
-    //   PayOrderTemplate({
-    //     orderId: order.id,
-    //     totalAmount: order.totalAmount,
-    //     paymentUrl,
-    //   }),
-    // );
+    await sendEmail(
+      data.email,
+      'Pizza / Оплатите заказ #' + order.id,
+      PayOrderTemplate({
+        orderId: order.id,
+        totalAmount: order.totalAmount,
+        paymentUrl,
+      }),
+    );
     return paymentUrl;
   } catch (error) {
     console.log('[CreateOrder] Server error', error);
+  }
+}
+
+export async function updateUserInfo(body: Prisma.UserUpdateInput) {
+  try {
+    const currentUser = await getUserSession();
+
+    if (!currentUser) {
+      throw new Error('Пользователь не найден');
+    }
+
+    const findUser = await prisma.user.findFirst({
+      where: {
+        id: Number(currentUser.id),
+      },
+    });
+
+    await prisma.user.update({
+      where: {
+        id: Number(currentUser.id),
+      },
+      data: {
+        fullName: body.fullName,
+        email: body.email,
+        password: body.password ? hashSync(body.password as string, 10) : findUser?.password,
+      },
+    });
+  } catch (err) {
+    console.log('Error [UPDATE_USER]', err);
+    throw err;
   }
 }

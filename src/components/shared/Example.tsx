@@ -1,20 +1,20 @@
 "use client"
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 export default function Example() {
-  const [value, setValue] = useState("Исходное значение");
-
-  useEffect(() => {
-    setValue("useEffect изменил");
-    console.log("useEffect сработал");
-  }, []);
-
-  useLayoutEffect(() => {
-    setValue("useLayoutEffect изменил");
-    console.log("useLayoutEffect сработал");
-  }, []);
+  const [isVisible, setIsVisible] = useState(false);
+  const inputRef = useRef()
+  
+  const toggle = ()=>{
+    setIsVisible((prev)=>!prev)
+    inputRef.current?.focus()
+  }
 
   return (
-  <p>значение:{value}</p>
+  <div>
+    <h2>current{isVisible}</h2>
+    <button onClick={toggle}>Show focus</button>
+    {isVisible && <input type="text" ref={inputRef}/>}
+    </div>
   );
 }

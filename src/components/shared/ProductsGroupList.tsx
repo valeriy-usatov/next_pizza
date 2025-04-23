@@ -34,7 +34,7 @@ const ProductsGroupList = ({
   });
   const { searchInput } = useSearchStore();
   const [productPrice, setProductPrice] = useState<ProductItem[]>([]);
-  console.log(ingredients);
+ 
 
   useEffect(() => {
     const fetchData = async () => {

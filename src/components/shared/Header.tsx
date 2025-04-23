@@ -1,21 +1,53 @@
+'use client';
 
 import Image from 'next/image';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { User, ShoppingCart, ArrowRight } from 'lucide-react';
-import { Button } from '../ui';
+
 import { Container } from './Container';
 import SearchInput from './SearchInput';
 import CartButton from './CartButton';
 import CartSheet from './CartSheet';
-
+import { useSearchParams } from 'next/navigation';
+import toast from 'react-hot-toast';
+import {useSession } from 'next-auth/react';
+import ProfileButton from './ProfileButton';
+import AuthModal from './modal/auth-modal/AuthModal';
 
 interface Props {
   isHasSearch?: boolean;
   isHasCart?: boolean;
   className?: string;
 }
-const Header:React.FC <Props> = ({isHasSearch = true , isHasCart = true, className}) => {
+const Header: React.FC<Props> = ({ isHasSearch = true, isHasCart = true, className }) => {
+  const [openAuthModal, setOpenAuthModal] = useState(false);
+  const searchParams = useSearchParams();
+  const { data: session } = useSession();
+
+  console.log('session', session);
+  useEffect(() => {
+    let toastMessage = '';
+
+    if (searchParams.has('paid')) {
+      setTimeout(() => {
+        toast.success('Заказ успешно оплачен! Информация отправлена на почту.');
+      }, 500);
+    }
+
+    // if (searchParams.has('verified')) {
+    //   toastMessage = 'Почта успешно подтверждена!';
+    // }
+
+    // if (toastMessage) {
+    //   setTimeout(() => {
+    //     router.replace('/');
+    //     toast.success(toastMessage, {
+    //       duration: 3000,
+    //     });
+    //   }, 1000);
+    // }
+  }, []);
+
   return (
     <header className="border-b">
       <Container className="flex  justify-between gap-10 items-center py-10 ">
@@ -28,22 +60,19 @@ const Header:React.FC <Props> = ({isHasSearch = true , isHasCart = true, classNa
           </div>
         </Link>
         {/* Центр */}
-        { isHasSearch && 
-        <SearchInput /> }
+        {isHasSearch && <SearchInput />}
         {/* Правая часть */}
         <div className="flex gap-4 ml-7">
-          <Button variant="outline" className="flex items-center gap-2">
-            <User size={16} />
-            Войти
-          </Button>
+          <AuthModal open={openAuthModal} onClose={()=>setOpenAuthModal(false)}/>
+          <ProfileButton onClickSignIn={()=>setOpenAuthModal(true)}/>
+
           {isHasCart && (
-          <div>
-            <CartSheet>
-            <CartButton />
-            </CartSheet>
-          </div>
-            
-            )}
+            <div>
+              <CartSheet>
+                <CartButton />
+              </CartSheet>
+            </div>
+          )}
         </div>
       </Container>
     </header>

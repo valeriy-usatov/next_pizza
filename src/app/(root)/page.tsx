@@ -23,7 +23,7 @@ export type CategoryWithProducts = Category & { products: ProductWithIngredients
 
 export default async function Home({ searchParams }: { searchParams: GetSearchParams }) {
   const categories = await findPizzas(searchParams);
-  console.log(categories);
+
   return (
     <>
       <Container className="mt-10">

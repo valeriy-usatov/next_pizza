@@ -31,7 +31,7 @@ export interface Metadata {
   order_id: string;
 }
 
-export type PaymentCallbackData = {
+export type PaymentCallbackData = {  /* Информация которая придет от Юкассы */
   type: string;
   event: string;
   object: {
