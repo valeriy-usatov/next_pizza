@@ -1,20 +1,26 @@
 "use client"
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
+function getPeaople (name, page = 1){
+  return fetch('https://rickandmortyapi.com/api/character/?name=${name}&page=${page}').then(res => res.json())
+}
+
 export default function Example() {
-  const [isVisible, setIsVisible] = useState(false);
-  const inputRef = useRef()
+
+  const [query, setQury] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [people, setPeople] = useState(null);
   
-  const toggle = ()=>{
-    setIsVisible((prev)=>!prev)
-    inputRef.current?.focus()
-  }
+  
+  
 
   return (
   <div>
-    <h2>current{isVisible}</h2>
-    <button onClick={toggle}>Show focus</button>
-    {isVisible && <input type="text" ref={inputRef}/>}
+    <input type="text" placeholder="query" onChange={(e) => setQury(e.target.value)} />
+    {people.map(item=>{
+     return <li>{item.name}</li>
+    })}
     </div>
   );
 }

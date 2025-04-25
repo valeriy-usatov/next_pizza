@@ -4,6 +4,7 @@ import { signIn } from 'next-auth/react';
 import Image from 'next/image';
 import React, { useState } from 'react';
 import LoginForm from './forms/LoginForm';
+import { RegisterForm } from './forms/RegisterForm';
 
 interface Props {
   open: boolean;
@@ -24,7 +25,11 @@ const AuthModal = ({ open, onClose }: Props) => {
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="w-[450px] bg-white p-10">
-        {type === "login" ? <LoginForm onClose={handleClose}/> : <h1>Register</h1>}
+        {type === 'login' ? (
+          <LoginForm onClose={handleClose} />
+        ) : (
+          <RegisterForm onClose={handleClose} />
+        )}
         <hr />
         <div className="flex gap">
           <Button

@@ -1,6 +1,4 @@
 
-// import { OrderSuccessTemplate } from '@/shared/components/shared/email-temapltes/order-success';
-// import { CartItemDTO } from '@/shared/services/dto/cart.dto';
 import { OrderStatus } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../../../prisma/prismaClient';

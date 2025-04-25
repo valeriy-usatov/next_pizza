@@ -17,11 +17,13 @@ import { AdressInput } from '@/components/shared/AddressInput';
 import ErrorText from '@/components/shared/formComponents/ErrorText';
 import { createOrder } from '@/app/actions';
 import toast from 'react-hot-toast';
+import { useSession } from 'next-auth/react';
 
 const CheckoutPage = () => {
   const [isClient, setIsClient] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const { pizzas, totalAmount, clearCart, loading } = useCartStore();
+  const {data: session} = useSession()
 
   const form = useForm<CheckoutFormValues>({
     resolver: zodResolver(checkoutFormSchema),
@@ -36,6 +38,8 @@ const CheckoutPage = () => {
   });
 
   useEffect(() => {
+    
+    
     setIsClient(true);
   }, []);
 

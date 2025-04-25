@@ -120,8 +120,10 @@ model VerificationCode {
   id        Int      @id @default(autoincrement())
   user      User     @relation(fields: [userId], references: [id])
   userId    Int      @unique
-  code      String   @unique
+  code      String
   createdAt DateTime @default(now())
+
+  @@unique([userId, code])
 }
 
 enum OrderStatus {
@@ -133,4 +135,24 @@ enum OrderStatus {
 enum UserRole {
   USER
   ADMIN
+}
+
+model Story {
+  id              Int    @id @default(autoincrement())
+  previewImageUrl String
+
+  items StoryItem[]
+
+  createdAt DateTime @default(now())
+}
+
+model StoryItem {
+  id Int @id @default(autoincrement())
+
+  storyId Int
+  story   Story @relation(fields: [storyId], references: [id])
+
+  sourceUrl String
+
+  createdAt DateTime @default(now())
 }

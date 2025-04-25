@@ -15,6 +15,8 @@ import { prisma } from '../../../prisma/prismaClient';
 import { findPizzas, GetSearchParams } from '@/lib/findPizzas';
 import Example from '@/components/shared/Example';
 import { Category, Ingredient, Product } from '@prisma/client';
+import { Stories } from '../../components/shared/Stories';
+
 
 type CategoryProps = {};
 // export type CategoryWithProducts = Category & { products: Product[] } ;
@@ -29,6 +31,7 @@ export default async function Home({ searchParams }: { searchParams: GetSearchPa
       <Container className="mt-10">
         <h1 className="lg:text-lg xl:text-3xl 2xl:text-4xl font-bold">Все пиццы</h1>
         <TopBar />
+        <Stories/>
         <div className="flex gap-20 mt-10">
           {/* ФИЛЬТРАЦИЯ */}
           <div className="w-1/4">

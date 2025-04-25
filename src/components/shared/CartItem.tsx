@@ -61,7 +61,7 @@ const CartItem = ({ pizza, index }: { pizza: Pizza; index: number }) => {
             )}
           </div>
           <div className="border border-b-neutral-200"></div>
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between -center">
             <div className="flex gap-3 items-center">
               <Button
                 onClick={handleClickMinus}
