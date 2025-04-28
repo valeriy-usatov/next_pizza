@@ -1,12 +1,12 @@
-"use client"
-import Image from 'next/image';
-import React, { useState } from 'react';
-import { Minus, Plus, Trash2 } from 'lucide-react';
-import { Button } from '../ui';
-import { Pizza, useCartStore } from '@/store/cart';
-import toast from 'react-hot-toast';
+"use client";
+import React, { useState } from "react";
+import Image from "next/image";
+import toast from "react-hot-toast";
+import { Minus, Plus, Trash2 } from "lucide-react";
+import { Button } from "../ui";
+import { Pizza, useCartStore } from "@/store/cart";
 
-const CartItem = ({ pizza, index }: { pizza: Pizza; index: number }) => {
+const CartItem = ({ pizza }: { pizza: Pizza }) => {
   const { name, imageUrl, size, price, type, activeIngredients, count } = pizza;
   const { updatePizzaCount, removePizza } = useCartStore();
   const [isRemoved, setIsRemoved] = useState(false);
@@ -25,7 +25,6 @@ const CartItem = ({ pizza, index }: { pizza: Pizza; index: number }) => {
     }, 300); // Задержка, чтобы фон успел обновиться
   };
 
-
   const handleClickMinus = () => {
     if (count > 1) {
       updatePizzaCount(pizza.id, count - 1); // Передаём ID, а не name
@@ -35,8 +34,10 @@ const CartItem = ({ pizza, index }: { pizza: Pizza; index: number }) => {
   const disabledMinus = count <= 1;
   const disabledPlus = count >= 10;
   return (
-    <div className={`w-full p-8 relative transition-colors duration-300
-    ${isRemoved ? 'bg-gray-200' : 'bg-white'}`}>
+    <div
+      className={`w-full p-8 relative transition-colors duration-300
+    ${isRemoved ? "bg-gray-200" : "bg-white"}`}
+    >
       <div
         className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 cursor-pointer"
         onClick={handlePizzaRemove}
@@ -45,19 +46,35 @@ const CartItem = ({ pizza, index }: { pizza: Pizza; index: number }) => {
       </div>
       <div className="flex gap-4">
         <div>
-          <Image src={imageUrl} alt="Image" width={65} height={65} className="" />
+          <Image
+            src={imageUrl}
+            alt="Image"
+            width={65}
+            height={65}
+            className=""
+          />
         </div>
         <div className="flex flex-1 flex-col gap-3">
           <div className="flex flex-col gap-1">
             <h2 className="text-lg font-bold leading-6">{name}</h2>
             {!size && !type ? (
-              ''
+              ""
             ) : (
               <p className="text-sm text-gray-400">{`${
-                size === 20 ? 'Маленькая' : size === 30 ? 'Средняя' : size === 40 ? 'Большая' : ''
+                size === 20
+                  ? "Маленькая"
+                  : size === 30
+                    ? "Средняя"
+                    : size === 40
+                      ? "Большая"
+                      : ""
               } ${size} см, ${
-                type === 1 ? 'тонкое тесто' : type === 2 ? 'традиционное тесто' : ''
-              } ${activeIngredients?.length ? `+ ${activeIngredients.join(', ')}` : ''}   `}</p>
+                type === 1
+                  ? "тонкое тесто"
+                  : type === 2
+                    ? "традиционное тесто"
+                    : ""
+              } ${activeIngredients?.length ? `+ ${activeIngredients.join(", ")}` : ""}   `}</p>
             )}
           </div>
           <div className="border border-b-neutral-200"></div>

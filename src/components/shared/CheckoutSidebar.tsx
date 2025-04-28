@@ -1,8 +1,8 @@
-import React from 'react';
-import { ItemsDetails } from './ItemsDetails';
-import { ArrowRight, Package, Percent, Truck } from 'lucide-react';
-import { Button } from '../ui';
-import { WhiteBlock } from './WhiteBlock';
+import React from "react";
+import { ItemsDetails } from "./ItemsDetails";
+import { ArrowRight, Package, Percent, Truck } from "lucide-react";
+import { Button } from "../ui";
+import { WhiteBlock } from "./WhiteBlock";
 
 const Taxes = 0.15;
 const delivery_price = 250;
@@ -10,17 +10,16 @@ const delivery_price = 250;
 interface Props {
   totalAmount: () => number;
   loading?: boolean;
-  className?: string;
 }
 
-const CheckoutSidebar = ({ totalAmount, loading, className }: Props) => {
+const CheckoutSidebar = ({ totalAmount, loading }: Props) => {
   return (
     <div className="w-[450px]">
       <WhiteBlock className="p-6 sticky top-4">
         <div className="flex flex-col gap-1">
           <span className="text-xl">Итого:</span>
           {totalAmount() === 0 ? (
-            '0'
+            "0"
           ) : (
             <span className="text-[34px] font-extrabold">
               {totalAmount() + delivery_price + totalAmount() * Taxes} ₽

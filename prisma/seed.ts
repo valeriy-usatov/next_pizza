@@ -1,7 +1,7 @@
-import { Prisma } from '@prisma/client';
-import { hashSync } from 'bcrypt';
-import { categories, ingredients, products } from './constant';
-import { prisma } from './prismaClient';
+import { Prisma } from "@prisma/client";
+import { hashSync } from "bcrypt";
+import { categories, ingredients, products } from "./constant";
+import { prisma } from "./prismaClient";
 
 const randomDecimalNumber = (min: number, max: number) => {
   return Math.floor(Math.random() * (max - min) * 10 + min * 10) / 10;
@@ -28,18 +28,18 @@ async function up() {
   await prisma.user.createMany({
     data: [
       {
-        fullName: 'User Test',
-        email: 'user@mail.ru',
-        password: hashSync('user', 10), // хэширование пароля выполняется для того, чтобы сохранить пароль в безопасной форме.
+        fullName: "User Test",
+        email: "user@mail.ru",
+        password: hashSync("user", 10), // хэширование пароля выполняется для того, чтобы сохранить пароль в безопасной форме.
         verified: new Date(),
-        role: 'USER',
+        role: "USER",
       },
       {
-        fullName: 'Admin Test',
-        email: 'admin@mail.ru',
-        password: hashSync('admin', 10),
+        fullName: "Admin Test",
+        email: "admin@mail.ru",
+        password: hashSync("admin", 10),
         verified: new Date(),
-        role: 'ADMIN',
+        role: "ADMIN",
       },
     ] /* параметр data всегда обязателен, потому что он определяет, какие данные будут добавлены в базу данных. Без него Prisma не знает, что именно записывать в таблицу.data — это ключевой параметр, который предоставляет массив объектов для массового создания записей. */,
   });
@@ -55,8 +55,8 @@ async function up() {
   });
   const pizza1 = await prisma.product.create({
     data: {
-      name: 'Пепперони фреш',
-      imageUrl: '/pizza/Пепперони фреш.webp',
+      name: "Пепперони фреш",
+      imageUrl: "/pizza/Пепперони фреш.webp",
       categoryId: 1,
       ingredients: {
         connect: ingredients.slice(0, 5),
@@ -66,8 +66,8 @@ async function up() {
 
   const pizza2 = await prisma.product.create({
     data: {
-      name: 'Сырная',
-      imageUrl: '/pizza/Сырная.webp',
+      name: "Сырная",
+      imageUrl: "/pizza/Сырная.webp",
       categoryId: 1,
       ingredients: {
         connect: ingredients.slice(5, 10),
@@ -77,8 +77,8 @@ async function up() {
 
   const pizza3 = await prisma.product.create({
     data: {
-      name: 'Чоризо фреш',
-      imageUrl: '/pizza/Чоризо фреш.webp',
+      name: "Чоризо фреш",
+      imageUrl: "/pizza/Чоризо фреш.webp",
       categoryId: 1,
       ingredients: {
         connect: ingredients.slice(10, 40),
@@ -189,12 +189,12 @@ async function up() {
       {
         userId: 1,
         totalAmount: 0,
-        token: '1111',
+        token: "1111",
       },
       {
         userId: 2,
         totalAmount: 0,
-        token: '2222',
+        token: "2222",
       },
     ],
   });
@@ -209,32 +209,32 @@ async function up() {
       },
     },
   });
-  
+
   await prisma.story.createMany({
     data: [
       {
         previewImageUrl:
-          'https://cdn.inappstory.ru/story/xep/xzh/zmc/cr4gcw0aselwvf628pbmj3j/custom_cover/logo-350x440.webp?k=IgAAAAAAAAAE&v=3101815496',
+          "https://cdn.inappstory.ru/story/xep/xzh/zmc/cr4gcw0aselwvf628pbmj3j/custom_cover/logo-350x440.webp?k=IgAAAAAAAAAE&v=3101815496",
       },
       {
         previewImageUrl:
-          'https://cdn.inappstory.ru/story/km2/9gf/jrn/sb7ls1yj9fe5bwvuwgym73e/custom_cover/logo-350x440.webp?k=IgAAAAAAAAAE&v=3074015640',
+          "https://cdn.inappstory.ru/story/km2/9gf/jrn/sb7ls1yj9fe5bwvuwgym73e/custom_cover/logo-350x440.webp?k=IgAAAAAAAAAE&v=3074015640",
       },
       {
         previewImageUrl:
-          'https://cdn.inappstory.ru/story/quw/acz/zf5/zu37vankpngyccqvgzbohj1/custom_cover/logo-350x440.webp?k=IgAAAAAAAAAE&v=1336215020',
+          "https://cdn.inappstory.ru/story/quw/acz/zf5/zu37vankpngyccqvgzbohj1/custom_cover/logo-350x440.webp?k=IgAAAAAAAAAE&v=1336215020",
       },
       {
         previewImageUrl:
-          'https://cdn.inappstory.ru/story/7oc/5nf/ipn/oznceu2ywv82tdlnpwriyrq/custom_cover/logo-350x440.webp?k=IgAAAAAAAAAE&v=38903958',
+          "https://cdn.inappstory.ru/story/7oc/5nf/ipn/oznceu2ywv82tdlnpwriyrq/custom_cover/logo-350x440.webp?k=IgAAAAAAAAAE&v=38903958",
       },
       {
         previewImageUrl:
-          'https://cdn.inappstory.ru/story/q0t/flg/0ph/xt67uw7kgqe9bag7spwkkyw/custom_cover/logo-350x440.webp?k=IgAAAAAAAAAE&v=2941222737',
+          "https://cdn.inappstory.ru/story/q0t/flg/0ph/xt67uw7kgqe9bag7spwkkyw/custom_cover/logo-350x440.webp?k=IgAAAAAAAAAE&v=2941222737",
       },
       {
         previewImageUrl:
-          'https://cdn.inappstory.ru/story/lza/rsp/2gc/xrar8zdspl4saq4uajmso38/custom_cover/logo-350x440.webp?k=IgAAAAAAAAAE&v=4207486284',
+          "https://cdn.inappstory.ru/story/lza/rsp/2gc/xrar8zdspl4saq4uajmso38/custom_cover/logo-350x440.webp?k=IgAAAAAAAAAE&v=4207486284",
       },
     ],
   });
@@ -244,32 +244,31 @@ async function up() {
       {
         storyId: 1,
         sourceUrl:
-          'https://cdn.inappstory.ru/file/dd/yj/sx/oqx9feuljibke3mknab7ilb35t.webp?k=IgAAAAAAAAAE',
+          "https://cdn.inappstory.ru/file/dd/yj/sx/oqx9feuljibke3mknab7ilb35t.webp?k=IgAAAAAAAAAE",
       },
       {
         storyId: 1,
         sourceUrl:
-          'https://cdn.inappstory.ru/file/jv/sb/fh/io7c5zarojdm7eus0trn7czdet.webp?k=IgAAAAAAAAAE',
+          "https://cdn.inappstory.ru/file/jv/sb/fh/io7c5zarojdm7eus0trn7czdet.webp?k=IgAAAAAAAAAE",
       },
       {
         storyId: 1,
         sourceUrl:
-          'https://cdn.inappstory.ru/file/ts/p9/vq/zktyxdxnjqbzufonxd8ffk44cb.webp?k=IgAAAAAAAAAE',
+          "https://cdn.inappstory.ru/file/ts/p9/vq/zktyxdxnjqbzufonxd8ffk44cb.webp?k=IgAAAAAAAAAE",
       },
       {
         storyId: 1,
         sourceUrl:
-          'https://cdn.inappstory.ru/file/ur/uq/le/9ufzwtpdjeekidqq04alfnxvu2.webp?k=IgAAAAAAAAAE',
+          "https://cdn.inappstory.ru/file/ur/uq/le/9ufzwtpdjeekidqq04alfnxvu2.webp?k=IgAAAAAAAAAE",
       },
       {
         storyId: 1,
         sourceUrl:
-          'https://cdn.inappstory.ru/file/sy/vl/c7/uyqzmdojadcbw7o0a35ojxlcul.webp?k=IgAAAAAAAAAE',
+          "https://cdn.inappstory.ru/file/sy/vl/c7/uyqzmdojadcbw7o0a35ojxlcul.webp?k=IgAAAAAAAAAE",
       },
     ],
   });
 }
-
 
 async function down() {
   await prisma.$executeRaw`TRUNCATE TABLE "User" RESTART IDENTITY CASCADE`; // здесь sql запросы, чтобы у нас еще и id пользователей очищался, когда мы будем удалять таблицу. prisma.user.deleteManu() - здесь id не удаляется
@@ -284,7 +283,9 @@ async function main() {
   try {
     await down();
     await up();
-  } catch (e) {}
+  } catch (e) {
+    console.error(e);
+  }
 }
 
 main()

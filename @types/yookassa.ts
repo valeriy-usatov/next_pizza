@@ -31,14 +31,14 @@ export interface Metadata {
   order_id: string;
 }
 
-export type PaymentCallbackData = {  /* Информация которая придет от Юкассы */
-  type: string;
+export type PaymentCallbackData = {
+  /* Информация которая придет от Юкассы */ type: string;
   event: string;
   object: {
     id: string;
     status: string;
-    amount: { value: string; currency: 'RUB' };
-    income_amount: { value: string; currency: 'RUB' };
+    amount: { value: string; currency: "RUB" };
+    income_amount: { value: string; currency: "RUB" };
     description: string;
     recipient: { account_id: string; gateway_id: string };
     payment_method: {
@@ -50,7 +50,7 @@ export type PaymentCallbackData = {  /* Информация которая пр
     captured_at: string;
     created_at: string;
     test: boolean;
-    refunded_amount: { value: string; currency: 'RUB' };
+    refunded_amount: { value: string; currency: "RUB" };
     paid: boolean;
     refundable: true;
     metadata: { order_id: string };

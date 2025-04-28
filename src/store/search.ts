@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
 interface State {
   searchInput: string;
@@ -6,8 +6,8 @@ interface State {
 }
 
 export const useSearchStore = create<State>()((set) => ({
-  searchInput: '',
-  setActiveInput: (activeId: string) => set({ searchInput:activeId }),
+  searchInput: "",
+  setActiveInput: (activeId: string) => set({ searchInput: activeId }),
 }));
 
 // export const useCategoryStore = create<State>()((set) => ({

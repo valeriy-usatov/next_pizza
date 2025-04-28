@@ -1,18 +1,13 @@
-'use client';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import FilterCheckbox from './FilterCheckbox';
-import { Input } from '../ui';
-import { RangeSlider } from './RangeSlider';
-import CheckboxFiltersGroup from './CheckboxFiltersGroup';
-import { pizzaSizeOptions, pizzaTypes } from '../../../prisma/constant';
-import { useFiltersStore } from '@/store/filters';
-import qs from 'qs';
-import { useRouter } from 'next/navigation';
-
-interface PriceProps {
-  priceFrom?: number;
-  priceTo?: number;
-}
+"use client";
+import { useFiltersStore } from "@/store/filters";
+import { useRouter } from "next/navigation";
+import qs from "qs";
+import { useEffect, useMemo, useRef } from "react";
+import { pizzaSizeOptions, pizzaTypes } from "../../../prisma/constant";
+import { Input } from "../ui";
+import CheckboxFiltersGroup from "./CheckboxFiltersGroup";
+import FilterCheckbox from "./FilterCheckbox";
+import { RangeSlider } from "./RangeSlider";
 
 type SelectedItem = {
   id: number;
@@ -23,15 +18,22 @@ const Filters = () => {
   const router = useRouter();
   const isMounted = useRef(false);
 
-  const { price, size, type, filterIngredients, updatePrice, updateSize, updateType } =
-    useFiltersStore();
+  const {
+    price,
+    size,
+    type,
+    filterIngredients,
+    updatePrice,
+    updateSize,
+    updateType,
+  } = useFiltersStore();
 
   // Мемоизация фильтров для передачи в qs.stringify
   const filter = useMemo(() => {
     return {
       priceFrom: price.priceFrom,
       priceTo: price.priceTo,
-      size: size.map((item) => item.name.replace(' см', '')), // Убираем " см"
+      size: size.map((item) => item.name.replace(" см", "")), // Убираем " см"
       type: type.map((item) => item.name),
       ingredients: filterIngredients.map((item) => item.name),
     };
@@ -40,7 +42,7 @@ const Filters = () => {
   // Преобразование фильтров в строку запроса
   const filterQueryString = useMemo(() => {
     return qs.stringify(filter, {
-      arrayFormat: 'comma',
+      arrayFormat: "comma",
       encode: true, // Включаем правильное кодирование
       encodeValuesOnly: true, // Кодируем только значения, а не ключи
     });
@@ -52,9 +54,8 @@ const Filters = () => {
       router.push(`?${filterQueryString}`, {
         scroll: false /* отмена скрола */,
       });
-      console.log('filter', filter);
     }
-    isMounted.current= true;
+    isMounted.current = true;
   }, [filterQueryString, router]);
 
   // выбран ли чекбокс, используем метод some() для массива
@@ -93,7 +94,13 @@ const Filters = () => {
               key={item.id}
               checked={isChecked(item.id, size)} // Проверяем в глобальном хранилище
               onCheckedChange={(checked) =>
-                handleCheckedChange(item.id, item.text, updateSize, size, checked)
+                handleCheckedChange(
+                  item.id,
+                  item.text,
+                  updateSize,
+                  size,
+                  checked,
+                )
               }
             />
           ))}
@@ -111,9 +118,13 @@ const Filters = () => {
               min={0}
               max={1000}
               className="pr-6"
-              onChange={(e) => updatePrice({ ...price, priceFrom: Number(e.target.value) })}
+              onChange={(e) =>
+                updatePrice({ ...price, priceFrom: Number(e.target.value) })
+              }
             />
-            <span className="absolute inset-y-0 right-3 flex items-center text-gray-500">₽</span>
+            <span className="absolute inset-y-0 right-3 flex items-center text-gray-500">
+              ₽
+            </span>
           </div>
           <div className="relative">
             <Input
@@ -123,9 +134,14 @@ const Filters = () => {
               min={100}
               max={30000}
               className="pr-6"
-              onChange={(e) => updatePrice({ ...price, priceTo: Number(e.target.value) })}
+              onChange={(e) =>
+                updatePrice({ ...price, priceTo: Number(e.target.value) })
+              }
             />
-            <span className="absolute inset-y-0 right-3 flex items-center text-gray-500"> ₽</span>
+            <span className="absolute inset-y-0 right-3 flex items-center text-gray-500">
+              {" "}
+              ₽
+            </span>
           </div>
         </div>
         <RangeSlider
@@ -133,7 +149,9 @@ const Filters = () => {
           max={1000}
           step={10}
           value={[price.priceFrom || 0, price.priceTo || 1000]}
-          onValueChange={([priceFrom, priceTo]) => updatePrice({ priceFrom, priceTo })}
+          onValueChange={([priceFrom, priceTo]) =>
+            updatePrice({ priceFrom, priceTo })
+          }
         />
         <CheckboxFiltersGroup limit={6} />
       </div>
@@ -149,7 +167,13 @@ const Filters = () => {
               className="rounded-[18px]"
               checked={isChecked(item.id, type)} // Проверяем в глобальном хранилище
               onCheckedChange={(checked) =>
-                handleCheckedChange(item.id, item.text, updateType, type, checked)
+                handleCheckedChange(
+                  item.id,
+                  item.text,
+                  updateType,
+                  type,
+                  checked,
+                )
               }
             />
           ))}

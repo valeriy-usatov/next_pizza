@@ -1,37 +1,33 @@
-import Categories from '@/components/shared/Categories';
-import { Container } from '@/components/shared/Container';
-import Filters from '@/components/shared/Filters';
-import Header from '@/components/shared/Header';
-import ProductCart from '@/components/shared/ProductCart';
-import ProductsGroupList from '@/components/shared/ProductsGroupList';
-import SortPopup from '@/components/shared/SortPopup';
-import Counter from '@/components/shared/Template';
+import { Container } from "@/components/shared/Container";
+import Filters from "@/components/shared/Filters";
+import ProductsGroupList from "@/components/shared/ProductsGroupList";
 
-import TopBar from '@/components/shared/TopBar';
-import { Button } from '@/components/ui/button';
-import Image from 'next/image';
+import TopBar from "@/components/shared/TopBar";
 
-import { prisma } from '../../../prisma/prismaClient';
-import { findPizzas, GetSearchParams } from '@/lib/findPizzas';
-import Example from '@/components/shared/Example';
-import { Category, Ingredient, Product } from '@prisma/client';
-import { Stories } from '../../components/shared/Stories';
+import { findPizzas, GetSearchParams } from "@/lib/findPizzas";
+import { Category, Ingredient, Product } from "@prisma/client";
+import { Stories } from "../../components/shared/Stories";
 
-
-type CategoryProps = {};
-// export type CategoryWithProducts = Category & { products: Product[] } ;
 export type ProductWithIngredients = Product & { ingredients: Ingredient[] };
-export type CategoryWithProducts = Category & { products: ProductWithIngredients[] };
+export type CategoryWithProducts = Category & {
+  products: ProductWithIngredients[];
+};
 
-export default async function Home({ searchParams }: { searchParams: GetSearchParams }) {
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: GetSearchParams;
+}) {
   const categories = await findPizzas(searchParams);
 
   return (
     <>
       <Container className="mt-10">
-        <h1 className="lg:text-lg xl:text-3xl 2xl:text-4xl font-bold">Все пиццы</h1>
+        <h1 className="lg:text-lg xl:text-3xl 2xl:text-4xl font-bold">
+          Все пиццы
+        </h1>
         <TopBar />
-        <Stories/>
+        <Stories />
         <div className="flex gap-20 mt-10">
           {/* ФИЛЬТРАЦИЯ */}
           <div className="w-1/4">

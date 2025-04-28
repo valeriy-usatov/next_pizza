@@ -1,17 +1,16 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import { Button } from '../ui';
-import Image from 'next/image';
-import PizzaImage from './PizzaImage';
-import PizzaSize from './PizzaSize';
-import { pizzaSizeItems, pizzaTypeItems } from '@/data/constant';
-import { Ingredient, ProductItem } from '@prisma/client';
-import IngredientItem from './IngredientItem';
-import PizzaType from './PizzaType';
-import { useCartStore } from '@/store/cart';
-import { useRouter } from 'next/navigation';
-import toast from 'react-hot-toast';
+import React, { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Ingredient, ProductItem } from "@prisma/client";
+import toast from "react-hot-toast";
+import { Button } from "../ui";
+import PizzaImage from "./PizzaImage";
+import PizzaSize from "./PizzaSize";
+import { pizzaSizeItems, pizzaTypeItems } from "@/data/constant";
+import IngredientItem from "./IngredientItem";
+import PizzaType from "./PizzaType";
+import { useCartStore } from "@/store/cart";
 
 interface Props {
   imageUrl: string;
@@ -19,51 +18,42 @@ interface Props {
   id: number;
   items?: ProductItem[];
   ingredients: Ingredient[];
-
-  loading?: boolean;
   onSubmit?: (itemId: number, ingredients: number[]) => void;
-  className?: string;
 }
 type PizzaSize = 20 | 30 | 40;
 type PizzaType = 1 | 2;
 
-const ChoosePizzaForm = ({
-  name,
-  id,
-  items,
-  imageUrl,
-  ingredients,
-  loading,
-  onSubmit,
-  className,
-}: Props) => {
+const ChoosePizzaForm = ({ name, id, imageUrl, ingredients }: Props) => {
   const [size, setSize] = useState<PizzaSize>(20);
   const [type, setType] = useState<PizzaType>(1);
   const [activeIngredients, setActiveIngredients] = useState<string[]>([]);
   const [totalPriceIngredients, setTotalPrice] = useState<number[]>([]);
   const [productItem, setproductItem] = useState<ProductItem[]>([]);
-  const [productType, setproductType] = useState<PizzaType>(2);
   const router = useRouter();
   // Добавление пиццы в хранилище
   const addPizza = useCartStore((state) => state.addPizza);
 
   useEffect(() => {
     setTotalPrice(
-      ingredients.filter((item) => activeIngredients.includes(item.name)).map((item) => item.price),
+      ingredients
+        .filter((item) => activeIngredients.includes(item.name))
+        .map((item) => item.price),
     );
-  }, [activeIngredients, size]);
+  }, [activeIngredients, size, ingredients]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/productItem`);
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/productItem`,
+        );
         if (!res.ok) {
-          throw new Error('Failed to fetch');
+          throw new Error("Failed to fetch");
         }
         const data = await res.json();
         setproductItem(data);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error("Error fetching data:", error);
       }
     };
 
@@ -74,9 +64,6 @@ const ChoosePizzaForm = ({
     .filter((item) => item.productId === id)
     .find((item) => item.size === size && item.pizzaType === type);
 
-  const newItemPizza = productItem.filter((item) => item.productId === id);
-
-  const textDetaills = '25 см, традиционное тесто 25, 380 г';
   const totalPrice = newItem?.price || 0;
 
   const toggleIngredient = (name: string) => {
@@ -114,26 +101,32 @@ const ChoosePizzaForm = ({
     };
 
     addPizza(newPizza); // Возможно вы забыли вызвать функцию addPizza
-    toast.success( `${name} добавлена в корзину`);
+    toast.success(`${name} добавлена в корзину`);
 
     router.back();
   };
 
-  const availablePizzaSizes = productItem.filter(
-    (item) => item.productId === id && item.pizzaType == type,
-  );
+  const availablePizzaSizes = useMemo(() => {
+    return productItem.filter(
+      (item) => item.productId === id && item.pizzaType === type,
+    );
+  }, [productItem, id, type]);
 
-  const newpizzaSize = [...availablePizzaSizes.map((item, index) => item.size)];
+  const newpizzaSize = useMemo(() => {
+    return availablePizzaSizes.map((item) => item.size);
+  }, [availablePizzaSizes]);
 
-  const updatedPizzaSizeItems = pizzaSizeItems.map((item) => ({
-    ...item,
-    ...(newpizzaSize.includes(Number(item.value)) ? {} : { disabled: true }),
-  }));
+  const updatedPizzaSizeItems = useMemo(() => {
+    return pizzaSizeItems.map((item) => ({
+      ...item,
+      ...(newpizzaSize.includes(Number(item.value)) ? {} : { disabled: true }),
+    }));
+  }, [newpizzaSize]);
 
   useEffect(() => {
     const availableSize = updatedPizzaSizeItems.find((item) => !item.disabled);
     setSize(Number(availableSize?.value) as PizzaSize);
-  }, [type]);
+  }, [type, updatedPizzaSizeItems]);
 
   return (
     <div className="flex flex-1 gap-5">
@@ -141,7 +134,7 @@ const ChoosePizzaForm = ({
       <div className="w-[490px] bg-[#f7f6f5] p-7 flex flex-col gap-8">
         <h2 className="text-4xl font-extrabold tracking-[-0.01em]">{name}</h2>
         <p className="text-gray-400">{`${size} см ${
-          type === 1 ? 'традиционное' : 'тонкое'
+          type === 1 ? "традиционное" : "тонкое"
         } тесто`}</p>
         <PizzaSize
           value={String(size)}
@@ -173,8 +166,12 @@ const ChoosePizzaForm = ({
             ))}
           </div>
         </div>
-        <Button className="h-[55px] px-10 text-base rounded-[18px] w-full" onClick={hanleClickAdd}>
-          Добавить в корзину за {totalPrice + totalPriceIngredients.reduce((a, b) => a + b, 0)} ₽
+        <Button
+          className="h-[55px] px-10 text-base rounded-[18px] w-full"
+          onClick={hanleClickAdd}
+        >
+          Добавить в корзину за{" "}
+          {totalPrice + totalPriceIngredients.reduce((a, b) => a + b, 0)} ₽
         </Button>
       </div>
     </div>

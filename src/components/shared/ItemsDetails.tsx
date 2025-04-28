@@ -1,15 +1,15 @@
-import { cn } from '../../lib/utils';
-import React from 'react';
+import React from "react";
+import { cn } from "../../lib/utils";
 
 interface Props {
-  title?: React.ReactNode; 
+  title?: React.ReactNode;
   value?: number;
   className?: string;
 }
 
-export const ItemsDetails = ({ title, value, className }:Props) => {
+export const ItemsDetails = ({ title, value, className }: Props) => {
   return (
-    <div className={cn('flex my-4', className)}>
+    <div className={cn("flex my-4", className)}>
       <span className="flex flex-1 text-lg text-neutral-500">
         {title}
         <div className="flex-1 border-b border-dashed border-b-neutral-200 relative -top-1 mx-2" />

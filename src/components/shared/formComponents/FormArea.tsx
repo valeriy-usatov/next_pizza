@@ -1,11 +1,8 @@
-import React from 'react';
-import RequiredSymbol from './RequiredSymbol';
-
-import ErrorText from './ErrorText';
-import { Input } from '@/components/ui';
-import ClearButton from './ClearButton';
-import { useFormContext } from 'react-hook-form';
-import { Textarea } from '@/components/ui/textarea';
+"use client";
+import { Textarea } from "@/components/ui/textarea";
+import React from "react";
+import { useFormContext } from "react-hook-form";
+import ClearButton from "./ClearButton";
 
 interface Props extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   name: string;
@@ -26,7 +23,7 @@ const FormArea = ({ name, label, required, className, ...props }: Props) => {
   const errorText = errors[name]?.message as string;
 
   const onClickClear = () => {
-    setValue(name, '');
+    setValue(name, "");
   };
 
   return (

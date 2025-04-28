@@ -1,7 +1,6 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import { pizzaSizes } from '../../../prisma/constant';
+import { useState } from "react";
 
 type Variant = {
   name: string;
@@ -11,8 +10,8 @@ type Variant = {
 
 interface Props {
   items: readonly Variant[];
-  onClick?: (value: Variant['value']) => void;
-  value?: Variant['value'];
+  onClick?: (value: Variant["value"]) => void;
+  value?: Variant["value"];
   className?: string;
   newpizzaSize?: number | null;
   setSize?: (value: number) => void;
@@ -20,16 +19,7 @@ interface Props {
   size?: 20 | 30 | 40;
 }
 
-const PizzaType = ({
-  items = [],
-  onClick,
-  value,
-  type,
-  className = '',
-  setSize,
-  size,
-  newpizzaSize,
-}: Props) => {
+const PizzaType = ({ items = [], className = "", setSize }: Props) => {
   const [activeSize, setActiveSize] = useState(0);
 
   const handleClick = (item: Variant, index: number) => {
@@ -47,8 +37,10 @@ const PizzaType = ({
         <button
           key={item.name}
           className={`flex items-center justify-center px-6 ${
-            item.disabled ? 'pointer-events-none opacity-50 cursor-not-allowed' : 'cursor-pointer'
-          } ${activeSize === index ? 'bg-white rounded-3xl px-6 py-2' : ''}`}
+            item.disabled
+              ? "pointer-events-none opacity-50 cursor-not-allowed"
+              : "cursor-pointer"
+          } ${activeSize === index ? "bg-white rounded-3xl px-6 py-2" : ""}`}
           onClick={() => handleClick(item, index)}
           // onClick={() => setActiveSize(index)}
         >

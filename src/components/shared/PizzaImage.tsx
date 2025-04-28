@@ -1,6 +1,5 @@
-import { Product } from '@prisma/client';
-import Image from 'next/image';
-import React from 'react';
+import React from "react";
+import Image from "next/image";
 
 interface Props {
   className?: string;
@@ -12,12 +11,11 @@ interface Props {
 const PizzaImage = ({ imageUrl, size }: Props) => {
   const imageSize =
     size === 20
-      ? 'w-[300px] h-[300px]'
+      ? "w-[300px] h-[300px]"
       : size === 30
-      ? 'w-[400px] h-[400px]'
-      : 'w-[500px] h-[500px]';
+        ? "w-[400px] h-[400px]"
+        : "w-[500px] h-[500px]";
 
-     
   return (
     <div className="flex items-center justify-center flex-1 relative w-full">
       {imageUrl && (

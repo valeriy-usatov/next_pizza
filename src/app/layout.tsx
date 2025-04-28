@@ -1,13 +1,12 @@
-import type { Metadata } from 'next';
-import { Nunito } from 'next/font/google';
+import { Nunito } from "next/font/google";
 
-import './globals.css';
-import Providers from '@/components/shared/Providers';
+import "./globals.css";
+import Providers from "@/components/shared/Providers";
 
 const nunito = Nunito({
-  subsets: ['cyrillic'],
-  variable: '--font-nunito',
-  weight: ['400', '500', '600', '700', '800', '900'],
+  subsets: ["cyrillic"],
+  variable: "--font-nunito",
+  weight: ["400", "500", "600", "700", "800", "900"],
 });
 
 // В главном layout не должно быть metadata и мы их удаляем и от главного layout отталкиваются другие layout

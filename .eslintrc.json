@@ -5,8 +5,35 @@
     "plugin:prettier/recommended",
     "next/typescript"
   ],
-  "plugins": ["prettier"],
+  "plugins": ["prettier", "unused-imports"],
   "rules": {
-    "prettier/prettier": "error"
+    "prettier/prettier": "error",
+
+    // удаляет неиспользуемые импорты
+    "unused-imports/no-unused-imports": "error",
+
+    // удаляет неиспользуемые переменные (но оставляет если начинаются с _)
+    "unused-imports/no-unused-vars": [
+      "warn",
+      {
+        "vars": "all",
+        "varsIgnorePattern": "^_",
+        "args": "after-used",
+        "argsIgnorePattern": "^_"
+      }
+    ],
+
+    // основное правило для удаления всех неиспользуемых переменных, включая в catch
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "vars": "all",
+        "varsIgnorePattern": "^_",
+        "args": "after-used",
+        "argsIgnorePattern": "^_",
+        "caughtErrors": "all",
+        "caughtErrorsIgnorePattern": "^_"
+      }
+    ]
   }
 }

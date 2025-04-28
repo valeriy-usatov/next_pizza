@@ -1,10 +1,10 @@
-import { Button, Dialog } from '@/components/ui';
-import { DialogContent } from '@/components/ui/dialog';
-import { signIn } from 'next-auth/react';
-import Image from 'next/image';
-import React, { useState } from 'react';
-import LoginForm from './forms/LoginForm';
-import { RegisterForm } from './forms/RegisterForm';
+import React, { useState } from "react";
+import { signIn } from "next-auth/react";
+import Image from "next/image";
+import { Button, Dialog } from "@/components/ui";
+import { DialogContent } from "@/components/ui/dialog";
+import LoginForm from "./forms/LoginForm";
+import { RegisterForm } from "./forms/RegisterForm";
 
 interface Props {
   open: boolean;
@@ -12,10 +12,10 @@ interface Props {
 }
 
 const AuthModal = ({ open, onClose }: Props) => {
-  const [type, setType] = useState<'login' | 'register'>('login');
+  const [type, setType] = useState<"login" | "register">("login");
 
   const onSwitchType = () => {
-    setType(type === 'login' ? 'register' : 'login');
+    setType(type === "login" ? "register" : "login");
   };
 
   const handleClose = () => {
@@ -25,7 +25,7 @@ const AuthModal = ({ open, onClose }: Props) => {
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="w-[450px] bg-white p-10">
-        {type === 'login' ? (
+        {type === "login" ? (
           <LoginForm onClose={handleClose} />
         ) : (
           <RegisterForm onClose={handleClose} />
@@ -35,9 +35,9 @@ const AuthModal = ({ open, onClose }: Props) => {
           <Button
             variant="secondary"
             onClick={() =>
-              signIn('github', {
+              signIn("github", {
                 /* Второй параметр , говорит о том что у нас будет переходить на главную страницу */
-                callbackUrl: '/',
+                callbackUrl: "/",
                 redirect: true,
               })
             }
@@ -51,8 +51,8 @@ const AuthModal = ({ open, onClose }: Props) => {
           <Button
             variant="secondary"
             onClick={() =>
-              signIn('google', {
-                callbackUrl: '/',
+              signIn("google", {
+                callbackUrl: "/",
                 redirect: true,
               })
             }
@@ -63,8 +63,13 @@ const AuthModal = ({ open, onClose }: Props) => {
             Google
           </Button>
         </div>
-        <Button variant="outline" onClick={onSwitchType} type="button" className="h-12">
-          {type !== 'login' ? 'Войти' : 'Регистрация'}
+        <Button
+          variant="outline"
+          onClick={onSwitchType}
+          type="button"
+          className="h-12"
+        >
+          {type !== "login" ? "Войти" : "Регистрация"}
         </Button>
       </DialogContent>
     </Dialog>

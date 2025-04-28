@@ -1,24 +1,24 @@
-'use server';
+"use server";
 
-import { CheckoutFormValues } from '@/components/shared/constants/FormSchema';
-import { prisma } from '../../prisma/prismaClient';
-import { OrderStatus, Prisma } from '@prisma/client';
-import { cookies } from 'next/headers';
-import { sendEmail } from '@/lib/sendEmail';
-import { PayOrderTemplate } from '@/components/shared/email-template/PayOrder';
-import { createPayment } from '@/lib/createPayment';
-import { getUserSession } from '@/lib/getUserSession';
-import { hashSync } from 'bcrypt';
-import { VerificationUserTemplate } from '@/components/shared/email-template/VerificationUser';
+import { CheckoutFormValues } from "@/components/shared/constants/FormSchema";
+import { prisma } from "../../prisma/prismaClient";
+import { OrderStatus, Prisma } from "@prisma/client";
+import { cookies } from "next/headers";
+import { sendEmail } from "@/lib/sendEmail";
+import { PayOrderTemplate } from "@/components/shared/email-template/PayOrder";
+import { createPayment } from "@/lib/createPayment";
+import { getUserSession } from "@/lib/getUserSession";
+import { hashSync } from "bcrypt";
+import { VerificationUserTemplate } from "@/components/shared/email-template/VerificationUser";
 
 export async function createOrder(data: CheckoutFormValues) {
   try {
     // у северных экшенов нет метода req const token = req.cookies.get('cartToken')?.value и поэтому мы используем специальную функцию, чтобы вытащить куки cookies()
     const cookieStore = cookies();
-    const cartToken = cookieStore.get('cartToken')?.value;
+    const cartToken = cookieStore.get("cartToken")?.value;
 
     if (!cartToken) {
-      throw new Error('Cart token not found');
+      throw new Error("Cart token not found");
     }
 
     /* Находим корзину по токену */
@@ -42,18 +42,18 @@ export async function createOrder(data: CheckoutFormValues) {
     });
     /* Если корзина не найдена возращаем ошибку */
     if (!userCart) {
-      throw new Error('Cart not found');
+      throw new Error("Cart not found");
     }
 
     /* Если корзина пустая возращаем ошибку */
     if (userCart?.totalAmount === 0) {
-      throw new Error('Cart is empty');
+      throw new Error("Cart is empty");
     }
     /* Создаем заказ */
     const order = await prisma.order.create({
       data: {
         token: cartToken,
-        fullName: data.firstName + ' ' + data.lastName,
+        fullName: data.firstName + " " + data.lastName,
         email: data.email,
         phone: data.phone,
         address: data.address,
@@ -84,11 +84,11 @@ export async function createOrder(data: CheckoutFormValues) {
     const paymentData = await createPayment({
       amount: order.totalAmount /* общая сумма всего заказов */,
       orderId: order.id,
-      description: 'Оплата заказа #' + order.id,
+      description: "Оплата заказа #" + order.id,
     });
 
     if (!paymentData) {
-      throw new Error('Payment data not found');
+      throw new Error("Payment data not found");
     }
 
     await prisma.order.update({
@@ -101,10 +101,12 @@ export async function createOrder(data: CheckoutFormValues) {
       },
     });
 
-    const paymentUrl = paymentData.confirmation.confirmation_url; /* перенаправляет на наш платежный сервис */
+    const paymentUrl =
+      paymentData.confirmation
+        .confirmation_url; /* перенаправляет на наш платежный сервис */
     await sendEmail(
       data.email,
-      'Pizza / Оплатите заказ #' + order.id,
+      "Pizza / Оплатите заказ #" + order.id,
       PayOrderTemplate({
         orderId: order.id,
         totalAmount: order.totalAmount,
@@ -113,7 +115,7 @@ export async function createOrder(data: CheckoutFormValues) {
     );
     return paymentUrl;
   } catch (error) {
-    console.log('[CreateOrder] Server error', error);
+    console.log("[CreateOrder] Server error", error);
   }
 }
 
@@ -122,7 +124,7 @@ export async function updateUserInfo(body: Prisma.UserUpdateInput) {
     const currentUser = await getUserSession();
 
     if (!currentUser) {
-      throw new Error('Пользователь не найден');
+      throw new Error("Пользователь не найден");
     }
 
     const findUser = await prisma.user.findFirst({
@@ -138,11 +140,13 @@ export async function updateUserInfo(body: Prisma.UserUpdateInput) {
       data: {
         fullName: body.fullName,
         email: body.email,
-        password: body.password ? hashSync(body.password as string, 10) : findUser?.password,
+        password: body.password
+          ? hashSync(body.password as string, 10)
+          : findUser?.password,
       },
     });
   } catch (err) {
-    console.log('Error [UPDATE_USER]', err);
+    console.log("Error [UPDATE_USER]", err);
     throw err;
   }
 }
@@ -157,10 +161,10 @@ export async function registerUser(body: Prisma.UserCreateInput) {
 
     if (user) {
       if (!user.verified) {
-        throw new Error('Почта не подтверждена');
+        throw new Error("Почта не подтверждена");
       }
 
-      throw new Error('Пользователь уже существует');
+      throw new Error("Пользователь уже существует");
     }
 
     const createdUser = await prisma.user.create({
@@ -182,13 +186,13 @@ export async function registerUser(body: Prisma.UserCreateInput) {
 
     await sendEmail(
       createdUser.email,
-      'Next Pizza / 📝 Подтверждение регистрации',
+      "Next Pizza / 📝 Подтверждение регистрации",
       VerificationUserTemplate({
         code,
       }),
     );
   } catch (err) {
-    console.log('Error [CREATE_USER]', err);
+    console.log("Error [CREATE_USER]", err);
     throw err;
   }
 }

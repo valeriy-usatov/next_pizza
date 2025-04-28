@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 interface PriceProps {
   priceFrom?: number;
@@ -30,14 +30,17 @@ export const useFiltersStore = create<FiltersState>()(
       type: [],
       filterIngredients: [],
       updatePrice: (price) => set(() => ({ price })),
-      updateSize: (newSize: SelectedItem[]) => set((state) => ({ ...state, size: newSize })),
-      updateType: (newType: SelectedItem[]) => set((state) => ({ ...state, type: newType })),
+      updateSize: (newSize: SelectedItem[]) =>
+        set((state) => ({ ...state, size: newSize })),
+      updateType: (newType: SelectedItem[]) =>
+        set((state) => ({ ...state, type: newType })),
       // updateSize: (size) => set(() => ({ size })),
       // updateType: (type) => set(() => ({ type })),
-      updateFilterIngredients: (NewFilterIngredients: SelectedItem[]) => set((state) => ({ ...state, filterIngredients: NewFilterIngredients })),
+      updateFilterIngredients: (NewFilterIngredients: SelectedItem[]) =>
+        set((state) => ({ ...state, filterIngredients: NewFilterIngredients })),
     }),
     {
-      name: 'filter', // Уникальное имя в localStorage
+      name: "filter", // Уникальное имя в localStorage
     },
   ),
 );

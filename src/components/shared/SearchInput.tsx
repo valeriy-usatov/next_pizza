@@ -1,12 +1,12 @@
-'use client';
-import React, { useEffect, useState } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { Product } from '@prisma/client';
-import { useDebounce } from 'react-use';
+"use client";
+import React, { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { Product } from "@prisma/client";
+import { useDebounce } from "react-use";
 
 const SearchInput = () => {
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
   const [isfocused, setIsFocused] = useState(false);
   const [products, setProducts] = useState<Product[]>([]); // Состояние для хранения данных
 
@@ -18,16 +18,16 @@ const SearchInput = () => {
           const res = await fetch(
             `${process.env.NEXT_PUBLIC_API_URL}/api/product/search?query=${search}`,
             {
-              cache: 'no-store',
+              cache: "no-store",
             },
           );
           if (!res.ok) {
-            throw new Error('Failed to fetch');
+            throw new Error("Failed to fetch");
           }
           const data = await res.json();
           setProducts(data.products); // Сохраняем данные в состоянии
         } catch (error) {
-          console.error('Error fetching data:', error);
+          console.error("Error fetching data:", error);
         }
       };
 
@@ -39,12 +39,12 @@ const SearchInput = () => {
 
   const getData = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setSearch('');
+    setSearch("");
   };
 
   const onClickItem = () => {
     setIsFocused(false);
-    setSearch('');
+    setSearch("");
     setProducts([]);
   };
   return (
@@ -72,21 +72,30 @@ const SearchInput = () => {
         />
         <div
           className={`absolute w-full bg-white rounded-xl py-2 top-14 left-0 shadow-md ${
-            isfocused && search ? 'visible opacity-100 top-12' : 'invisible opacity-0'
+            isfocused && search
+              ? "visible opacity-100 top-12"
+              : "invisible opacity-0"
           }`}
         >
           {products.length > 1 ? (
-            products.map((product: { id: number; name: string; imageUrl: string }) => (
-              <Link
-                key={product.id}
-                href={`/product/${product.id}`}
-                onClick={onClickItem}
-                className="flex gap-3 items-center py-1 px-3 hover:bg-primary/10 hover:rounded-md"
-              >
-                <Image src={product.imageUrl} alt={product.name} width={30} height={30} />
-                <span>{product.name}</span>
-              </Link>
-            ))
+            products.map(
+              (product: { id: number; name: string; imageUrl: string }) => (
+                <Link
+                  key={product.id}
+                  href={`/product/${product.id}`}
+                  onClick={onClickItem}
+                  className="flex gap-3 items-center py-1 px-3 hover:bg-primary/10 hover:rounded-md"
+                >
+                  <Image
+                    src={product.imageUrl}
+                    alt={product.name}
+                    width={30}
+                    height={30}
+                  />
+                  <span>{product.name}</span>
+                </Link>
+              ),
+            )
           ) : (
             <h3 className="pl-4">К сожелению такого у нас нет</h3>
           )}

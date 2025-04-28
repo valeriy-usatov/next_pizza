@@ -1,7 +1,6 @@
-import React from 'react';
-import Categories from './Categories';
-import SortPopup from './SortPopup';
-import { Container } from './Container';
+import React from "react";
+import Categories from "./Categories";
+import SortPopup from "./SortPopup";
 
 const TopBar = () => {
   return (

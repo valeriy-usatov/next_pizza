@@ -1,19 +1,16 @@
-'use client';
-
-// import { Dialog } from '@/components/ui';
-import { DialogContent, DialogTitle, Dialog } from '@/components/ui/dialog';
-import { Product } from '@prisma/client';
-import React from 'react';
-import { useRouter } from 'next/navigation';
-import ChooseProductForm from '../ChooseProductForm';
-import { ProductWithRelations } from '../../../../@types/prisma';
-import ChoosePizzaForm from '../ChoosePizzaForm';
+"use client";
+import React from "react";
+import { useRouter } from "next/navigation";
+import ChooseProductForm from "../ChooseProductForm";
+import { DialogContent, Dialog } from "@/components/ui/dialog";
+import { ProductWithRelations } from "../../../../@types/prisma";
+import ChoosePizzaForm from "../ChoosePizzaForm";
 
 interface Props {
   product: ProductWithRelations;
   className?: string;
 }
-const ChooseProductModal = ({ product, className }: Props) => {
+const ChooseProductModal = ({ product }: Props) => {
   const router = useRouter();
   const isPizzaForm = Boolean(product.items[0].pizzaType);
 
@@ -28,7 +25,11 @@ const ChooseProductModal = ({ product, className }: Props) => {
             id={product.id}
           />
         ) : (
-          <ChooseProductForm imageUrl={product.imageUrl} name={product.name} id={product.id} />
+          <ChooseProductForm
+            imageUrl={product.imageUrl}
+            name={product.name}
+            id={product.id}
+          />
         )}
       </DialogContent>
     </Dialog>

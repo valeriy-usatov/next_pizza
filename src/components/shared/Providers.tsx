@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { SessionProvider } from 'next-auth/react';
-import toast, { Toaster } from 'react-hot-toast';
-import NextTopLoader from 'nextjs-toploader';
+import React from "react";
+import { SessionProvider } from "next-auth/react";
+import { Toaster } from "react-hot-toast";
+import NextTopLoader from "nextjs-toploader";
 
 const Providers = ({ children }: { children: React.ReactNode }) => {
   return (

@@ -1,15 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server';
-import crypto from 'crypto';
-import { prisma } from '../../../../prisma/prismaClient';
-import { ingredients } from '../../../../prisma/constant';
-import { findOrCreateCart } from '@/lib/findOrCreateCart';
-import { CreateCartItemValues } from '../../../../@types/prisma';
-import { updateCartTotalAmount } from '@/lib/updateCartTotalAmount';
+import { NextRequest, NextResponse } from "next/server";
+import crypto from "crypto";
+import { prisma } from "../../../../prisma/prismaClient";
+import { findOrCreateCart } from "@/lib/findOrCreateCart";
+import { updateCartTotalAmount } from "@/lib/updateCartTotalAmount";
 
 export async function GET(req: NextRequest) {
   try {
     // const userId = 1;
-    const token = req.cookies.get('cartToken')?.value;
+    const token = req.cookies.get("cartToken")?.value;
 
     if (!token) {
       return NextResponse.json({ totalAmount: 0, items: [] });
@@ -23,7 +21,7 @@ export async function GET(req: NextRequest) {
       include: {
         items: {
           orderBy: {
-            createdAt: 'desc' /* и остортируй эти товары */,
+            createdAt: "desc" /* и остортируй эти товары */,
           },
           include: {
             productItem: {
@@ -38,12 +36,18 @@ export async function GET(req: NextRequest) {
     });
 
     return NextResponse.json(userCart);
-  } catch (error) {}
+  } catch (error) {
+    console.error("[CART_GET] Ошибка сервера:", error);
+    return NextResponse.json(
+      { message: "Ошибка получения корзины" },
+      { status: 500 },
+    );
+  }
 }
 
 export async function POST(req: NextRequest) {
   try {
-    let token = req.cookies.get('cartToken')?.value;
+    let token = req.cookies.get("cartToken")?.value;
 
     if (!token) {
       token = crypto.randomUUID();
@@ -66,7 +70,9 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    const incomingIngredientIds = (data.ingredients ?? []).map((ing) => ing.id).sort();
+    const incomingIngredientIds = (data.ingredients ?? [])
+      .map((ing) => ing.id)
+      .sort();
 
     const sameItem = potentialItems.find((item) => {
       const existingIds = item.ingredients.map((ing) => ing.id).sort();
@@ -79,14 +85,14 @@ export async function POST(req: NextRequest) {
 
     if (sameItem) {
       // Если такой товар с такими же ингредиентами уже есть — увеличиваем количество
-      const updatedItem = await prisma.cartItem.update({
-        where: { id: sameItem.id },
-        data: { quantity: sameItem.quantity + 1 },
-      });
+      // const updatedItem = await prisma.cartItem.update({
+      //   where: { id: sameItem.id },
+      //   data: { quantity: sameItem.quantity + 1 },
+      // });
 
       const updatedUserCart = await updateCartTotalAmount(token);
       const resp = NextResponse.json(updatedUserCart);
-      resp.cookies.set('cartToken', token);
+      resp.cookies.set("cartToken", token);
       return resp;
     } else {
       // Иначе — создаём новый товар в корзине
@@ -96,38 +102,49 @@ export async function POST(req: NextRequest) {
           productItemId: data.productItemId,
           quantity: 1,
           ingredients: {
-            connect: data.ingredients?.map((ingredient) => ({ id: ingredient.id })) ?? [],
+            connect:
+              data.ingredients?.map((ingredient) => ({ id: ingredient.id })) ??
+              [],
           },
         },
       });
 
       const updatedUserCart = await updateCartTotalAmount(token);
       const resp = NextResponse.json(updatedUserCart);
-      resp.cookies.set('cartToken', token);
+      resp.cookies.set("cartToken", token);
       return resp;
     }
   } catch (error) {
-    console.error('[CART_POST] Server error', error);
-    return NextResponse.json({ message: 'Не удалось создать корзину' }, { status: 500 });
+    console.error("[CART_POST] Server error", error);
+    return NextResponse.json(
+      { message: "Не удалось создать корзину" },
+      { status: 500 },
+    );
   }
 }
 
 export async function DELETE(req: NextRequest) {
   try {
     const body = await req.json();
-    console.log('[CART_DELETE] Запрос на удаление с body:', body);
+    console.log("[CART_DELETE] Запрос на удаление с body:", body);
 
     const { id } = body;
-    const token = req.cookies.get('cartToken')?.value;
+    const token = req.cookies.get("cartToken")?.value;
 
     if (!token) {
-      console.log('[CART_DELETE] Ошибка: Cart token not found');
-      return NextResponse.json({ error: 'Cart token not found' }, { status: 400 });
+      console.log("[CART_DELETE] Ошибка: Cart token not found");
+      return NextResponse.json(
+        { error: "Cart token not found" },
+        { status: 400 },
+      );
     }
 
     if (!id || isNaN(Number(id))) {
-      console.log('[CART_DELETE] Ошибка: Invalid cart item ID', id);
-      return NextResponse.json({ error: 'Invalid cart item ID' }, { status: 400 });
+      console.log("[CART_DELETE] Ошибка: Invalid cart item ID", id);
+      return NextResponse.json(
+        { error: "Invalid cart item ID" },
+        { status: 400 },
+      );
     }
 
     const cartItem = await prisma.cartItem.findFirst({
@@ -137,8 +154,11 @@ export async function DELETE(req: NextRequest) {
     });
 
     if (!cartItem) {
-      console.log('[CART_DELETE] Ошибка: Cart item not found');
-      return NextResponse.json({ error: 'Cart item not found' }, { status: 404 });
+      console.log("[CART_DELETE] Ошибка: Cart item not found");
+      return NextResponse.json(
+        { error: "Cart item not found" },
+        { status: 404 },
+      );
     }
 
     await prisma.cartItem.delete({
@@ -146,12 +166,18 @@ export async function DELETE(req: NextRequest) {
     });
 
     const updatedUserCart = await updateCartTotalAmount(token);
-    console.log('[CART_DELETE] Успешное удаление, обновленный список:', updatedUserCart);
+    console.log(
+      "[CART_DELETE] Успешное удаление, обновленный список:",
+      updatedUserCart,
+    );
 
     return NextResponse.json(updatedUserCart);
   } catch (error) {
-    console.error('[CART_DELETE] Server error', error);
-    return NextResponse.json({ message: 'Не удалось удалить товар из корзины' }, { status: 500 });
+    console.error("[CART_DELETE] Server error", error);
+    return NextResponse.json(
+      { message: "Не удалось удалить товар из корзины" },
+      { status: 500 },
+    );
   }
 }
 
@@ -165,7 +191,7 @@ export async function PUT(req: NextRequest) {
     });
 
     if (!cartItem) {
-      return NextResponse.json({ message: 'Товар не найден' }, { status: 404 });
+      return NextResponse.json({ message: "Товар не найден" }, { status: 404 });
     }
 
     // Обновляем количество в БД
@@ -176,7 +202,10 @@ export async function PUT(req: NextRequest) {
 
     return NextResponse.json(updatedCartItem);
   } catch (error) {
-    console.error('[CART_PUT] Ошибка сервера:', error);
-    return NextResponse.json({ message: 'Ошибка обновления корзины' }, { status: 500 });
+    console.error("[CART_PUT] Ошибка сервера:", error);
+    return NextResponse.json(
+      { message: "Ошибка обновления корзины" },
+      { status: 500 },
+    );
   }
 }

@@ -1,4 +1,4 @@
-import { prisma } from '../../prisma/prismaClient';
+import { prisma } from "../../prisma/prismaClient";
 
 export interface GetSearchParams {
   query?: string;
@@ -18,20 +18,20 @@ export const findPizzas = async (params: GetSearchParams) => {
   // const sizes = params.sizes?.split(',');
   const sizes = params.sizes
     ? params.sizes
-        .split(',')
+        .split(",")
         .map(Number)
         .filter((size) => !isNaN(size))
     : undefined;
   // const pizzaTypes = params.pizzaTypes?.split(',');
   const pizzaTypes = params.pizzaTypes
     ? params.pizzaTypes
-        .split(',')
+        .split(",")
         .map(Number)
         .filter((type) => !isNaN(type))
     : undefined;
 
   // Получаем имена ингредиентов
-  const ingredientNames = params.ingredients?.split(',');
+  const ingredientNames = params.ingredients?.split(",");
 
   // Получаем диапазон цен
   const minPrice = Number(params.priceFrom) || DEFAULT_MIN_PRICE;
@@ -41,7 +41,7 @@ export const findPizzas = async (params: GetSearchParams) => {
     include: {
       products: {
         orderBy: {
-          id: 'desc', // Сортировка по id в порядке убывания
+          id: "desc", // Сортировка по id в порядке убывания
         },
         where: {
           // Фильтрация по ингредиентам (по именам)

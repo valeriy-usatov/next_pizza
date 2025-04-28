@@ -1,41 +1,41 @@
-'use client';
+"use client";
 
-import { useCartStore } from '@/store/cart';
-import { useRouter } from 'next/navigation';
-import { Button } from '../ui';
-import Image from 'next/image';
-import { useEffect, useState } from 'react';
-import { ProductItem } from '@prisma/client';
-import toast from 'react-hot-toast';
+import { useCartStore } from "@/store/cart";
+import { ProductItem } from "@prisma/client";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { Button } from "../ui";
 
 interface Props {
   id: number;
   imageUrl: string;
   name: string;
-  loading?: boolean;
-  onSubmit?: (itemId: number, ingredients: number[]) => void;
-  className?: string;
 }
 
-const ChooseProductForm = ({ name, imageUrl, loading, onSubmit, className, id }: Props) => {
+const ChooseProductForm = ({ name, imageUrl, id }: Props) => {
   const addPizza = useCartStore((state) => state.addPizza);
   const [productItem, setproductItem] = useState<ProductItem[]>([]);
   const router = useRouter();
-  const totalPrice = productItem.find((item) => item.productId === id)?.price || 0;
+  const totalPrice =
+    productItem.find((item) => item.productId === id)?.price || 0;
 
   const newItem = productItem.find((item) => item.productId === id);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/productItem`);
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/productItem`,
+        );
         if (!res.ok) {
-          throw new Error('Failed to fetch');
+          throw new Error("Failed to fetch");
         }
         const data = await res.json();
         setproductItem(data);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error("Error fetching data:", error);
       }
     };
 
@@ -57,8 +57,6 @@ const ChooseProductForm = ({ name, imageUrl, loading, onSubmit, className, id }:
 
     router.back();
   };
-
-  // const textDetaills = '25 см, традиционное тесто 25, 380 г';
 
   return (
     <div className="flex flex-1">

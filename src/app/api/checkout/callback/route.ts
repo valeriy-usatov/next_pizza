@@ -1,11 +1,10 @@
-
-import { OrderStatus } from '@prisma/client';
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '../../../../../prisma/prismaClient';
-import { PaymentCallbackData } from '../../../../../@types/yookassa';
-import { sendEmail } from '@/lib/sendEmail';
-import { CartItemDTO } from '../../../../../@types/cartTypes';
-import { OrderSuccess } from '@/components/shared/email-template/OrderSuccess';
+import { OrderStatus } from "@prisma/client";
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "../../../../../prisma/prismaClient";
+import { PaymentCallbackData } from "../../../../../@types/yookassa";
+import { sendEmail } from "@/lib/sendEmail";
+import { CartItemDTO } from "../../../../../@types/cartTypes";
+import { OrderSuccess } from "@/components/shared/email-template/OrderSuccess";
 
 export async function POST(req: NextRequest) {
   try {
@@ -18,10 +17,10 @@ export async function POST(req: NextRequest) {
     });
 
     if (!order) {
-      return NextResponse.json({ error: 'Order not found' });
+      return NextResponse.json({ error: "Order not found" });
     }
 
-    const isSucceeded = body.object.status === 'succeeded';
+    const isSucceeded = body.object.status === "succeeded";
 
     await prisma.order.update({
       where: {
@@ -32,19 +31,21 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    const items = JSON.parse(order?.products as string) as CartItemDTO[];/* находим товары которые есть */ 
+    const items = JSON.parse(
+      order?.products as string,
+    ) as CartItemDTO[]; /* находим товары которые есть */
 
     if (isSucceeded) {
       await sendEmail(
         order.email,
-        'Next Pizza / Ваш заказ успешно оформлен 🎉',
+        "Next Pizza / Ваш заказ успешно оформлен 🎉",
         OrderSuccess({ orderId: order.id, items }),
       );
     } else {
       // Письмо о неуспешной оплате
     }
   } catch (error) {
-    console.log('[Checkout Callback] Error:', error);
-    return NextResponse.json({ error: 'Server error' });
+    console.log("[Checkout Callback] Error:", error);
+    return NextResponse.json({ error: "Server error" });
   }
 }

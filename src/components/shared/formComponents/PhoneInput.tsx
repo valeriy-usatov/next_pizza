@@ -1,10 +1,9 @@
-// components/shared/formComponents/PhoneInput.tsx
-import React from 'react';
-import InputMask from 'react-input-mask';
-import { useFormContext } from 'react-hook-form';
-import ErrorText from './ErrorText';
-import RequiredSymbol from './RequiredSymbol';
-import ClearButton from './ClearButton';
+"use client";
+import { useFormContext } from "react-hook-form";
+import InputMask from "react-input-mask";
+import ClearButton from "./ClearButton";
+import ErrorText from "./ErrorText";
+import RequiredSymbol from "./RequiredSymbol";
 
 interface Props {
   name: string;
@@ -14,9 +13,14 @@ interface Props {
   placeholder?: string;
 }
 
-const PhoneInput = ({ name, label, required, className, placeholder }: Props) => {
+const PhoneInput = ({
+  name,
+  label,
+  required,
+  className,
+  placeholder,
+}: Props) => {
   const {
-    register,
     formState: { errors },
     setValue,
     watch,
@@ -26,7 +30,7 @@ const PhoneInput = ({ name, label, required, className, placeholder }: Props) =>
   const errorText = errors[name]?.message as string;
 
   const onClickClear = () => {
-    setValue(name, '', { shouldValidate: true });
+    setValue(name, "", { shouldValidate: true });
   };
 
   return (
@@ -40,7 +44,9 @@ const PhoneInput = ({ name, label, required, className, placeholder }: Props) =>
         <InputMask
           mask="+7 (999) 999-99-99"
           value={value}
-          onChange={(e) => setValue(name, e.target.value, { shouldValidate: true })}
+          onChange={(e) =>
+            setValue(name, e.target.value, { shouldValidate: true })
+          }
         >
           {(inputProps) => (
             <input

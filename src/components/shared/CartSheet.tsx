@@ -1,22 +1,19 @@
-'use client';
-import React, { useEffect, useState } from 'react';
+"use client";
+import React, { useEffect, useState } from "react";
 import {
   Sheet,
-  SheetClose,
   SheetContent,
-  SheetDescription,
   SheetFooter,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from '@/components/ui/sheet';
-import CartButton from './CartButton';
-import Link from 'next/link';
-import { Button } from '../ui';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
-import CartItem from './CartItem';
-import { useCartStore } from '@/store/cart';
-import CartEmpty from './CartEmpty';
+} from "@/components/ui/sheet";
+import Link from "next/link";
+import { Button } from "../ui";
+import { ArrowRight } from "lucide-react";
+import CartItem from "./CartItem";
+import { useCartStore } from "@/store/cart";
+import CartEmpty from "./CartEmpty";
 
 type Ingredient = {
   name: string;
@@ -40,16 +37,6 @@ type CartItemData = {
   quantity: number;
 };
 
-type PizzaType = {
-  id: number;
-  name: string;
-  imageUrl: string;
-  size: number;
-  type: number;
-  price: number;
-  count: number;
-  activeIngredients: string[];
-};
 type Pizza = {
   productItemId: number;
   id: number;
@@ -63,26 +50,30 @@ type Pizza = {
 };
 const CartSheet: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Достаём данные и действия из хранилища
-  const { pizzas, setCart, totalAmount, clearCart } = useCartStore();
-  const [redirecting, setRedirecting] = useState(false)
+  const { pizzas, setCart, totalAmount } = useCartStore();
+  const [redirecting, setRedirecting] = useState(false);
 
   useEffect(() => {
     const fetchCart = async () => {
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/cart`);
-        if (!res.ok) throw new Error('Ошибка при загрузке корзины');
+        if (!res.ok) throw new Error("Ошибка при загрузке корзины");
 
         const data = await res.json();
-        const formattedPizzas: Pizza[] = data.items.map((item: CartItemData) => ({
-          id: item.id,
-          name: item.productItem.product.name,
-          imageUrl: item.productItem.product.imageUrl,
-          size: item.productItem.size,
-          type: item.productItem.pizzaType,
-          price: item.productItem.price + item.ingredients.reduce((sum, ing) => sum + ing.price, 0),
-          count: item.quantity,
-          activeIngredients: item.ingredients.map((ing) => ing.name),
-        }));
+        const formattedPizzas: Pizza[] = data.items.map(
+          (item: CartItemData) => ({
+            id: item.id,
+            name: item.productItem.product.name,
+            imageUrl: item.productItem.product.imageUrl,
+            size: item.productItem.size,
+            type: item.productItem.pizzaType,
+            price:
+              item.productItem.price +
+              item.ingredients.reduce((sum, ing) => sum + ing.price, 0),
+            count: item.quantity,
+            activeIngredients: item.ingredients.map((ing) => ing.name),
+          }),
+        );
 
         setCart(formattedPizzas);
       } catch (error) {
@@ -106,7 +97,10 @@ const CartSheet: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         {pizzas.length > 0 && (
           <SheetHeader>
             <SheetTitle>
-              В корзине <span className="font-bold">{getItemCountText(pizzas.length)}</span>
+              В корзине{" "}
+              <span className="font-bold">
+                {getItemCountText(pizzas.length)}
+              </span>
             </SheetTitle>
           </SheetHeader>
         )}
@@ -119,8 +113,8 @@ const CartSheet: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           </div>
         ) : (
           <div className="flex flex-col flex-1 items-start -mx-6 mt-5 overflow-auto gap-2">
-            {pizzas.map((pizza, index) => (
-              <CartItem key={pizza.name} pizza={pizza} index={index} />
+            {pizzas.map((pizza) => (
+              <CartItem key={pizza.name} pizza={pizza} />
             ))}
           </div>
         )}

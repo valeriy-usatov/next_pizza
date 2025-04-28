@@ -1,10 +1,9 @@
-import React from 'react';
-import { Button } from '../ui/button';
-import { ArrowLeft } from 'lucide-react';
-import Link from 'next/link';
-import { cn } from '@/lib/utils';
-import Image from 'next/image';
-
+import React from "react";
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
+import Image from "next/image";
+import { cn } from "@/lib/utils";
+import { Button } from "../ui/button";
 
 interface Props {
   title: string;
@@ -13,12 +12,17 @@ interface Props {
   imageUrl?: string;
 }
 
-export const InfoBlock = ({ className, title, text, imageUrl }:Props) => {
+export const InfoBlock = ({ className, title, text, imageUrl }: Props) => {
   return (
-    <div className={cn(className, 'flex items-center justify-between w-[840px] gap-12')}>
+    <div
+      className={cn(
+        className,
+        "flex items-center justify-between w-[840px] gap-12",
+      )}
+    >
       <div className="flex flex-col">
         <div className="w-[445px]">
-            <h2 className="font-extrabold" >{title}</h2>
+          <h2 className="font-extrabold">{title}</h2>
           <p className="text-gray-400 text-lg">{text}</p>
         </div>
 
@@ -30,14 +34,16 @@ export const InfoBlock = ({ className, title, text, imageUrl }:Props) => {
             </Button>
           </Link>
           <a href="">
-            <Button variant="outline" className="text-gray-500 border-gray-400 hover:bg-gray-50">
+            <Button
+              variant="outline"
+              className="text-gray-500 border-gray-400 hover:bg-gray-50"
+            >
               Обновить
             </Button>
           </a>
         </div>
       </div>
-      <Image src={imageUrl || ""}  alt="Image" width={300} height={300}  />
-     
+      <Image src={imageUrl || ""} alt="Image" width={300} height={300} />
     </div>
   );
 };
