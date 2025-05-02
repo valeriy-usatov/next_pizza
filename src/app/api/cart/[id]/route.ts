@@ -2,6 +2,9 @@ import { prisma } from "../../../../../prisma/prismaClient";
 import { updateCartTotalAmount } from "@/lib/updateCartTotalAmount";
 import { NextRequest, NextResponse } from "next/server";
 
+export const dynamic = "force-dynamic";
+
+
 export async function PATCH(
   req: NextRequest,
   { params }: { params: { id: string } },

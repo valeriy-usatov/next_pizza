@@ -1,7 +1,7 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import Link from "next/link";
 import { Product } from "@prisma/client";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
 import { useCategoryStore } from "@/store/category";
 
@@ -31,6 +31,7 @@ const Categories = () => {
         console.error("Error fetching data:", error);
       }
     };
+    console.log("API_URL:", process.env.NEXT_PUBLIC_API_URL);
 
     fetchData();
   }, []);

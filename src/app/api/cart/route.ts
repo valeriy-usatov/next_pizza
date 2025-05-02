@@ -1,8 +1,12 @@
+export const dynamic = "force-dynamic";
+
+
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { prisma } from "../../../../prisma/prismaClient";
 import { findOrCreateCart } from "@/lib/findOrCreateCart";
 import { updateCartTotalAmount } from "@/lib/updateCartTotalAmount";
+
 
 export async function GET(req: NextRequest) {
   try {

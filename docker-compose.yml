@@ -1,12 +1,52 @@
 services:
+  # Контейнер приложения
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:3006
+    ports:
+      - "3006:3000" # порт приложения
+      - "5555:5555" # Prisma Studio
+    restart: always
+    environment:
+      - DATABASE_URL=postgresql://myuser:mypassword@db:5432/mydb?schema=public
+      - AUTH_TRUST_HOST=true
+    depends_on:
+      db:
+        condition: service_healthy
+    command: >
+      sh -c " 
+        echo 'Waiting for the database...';
+        until nc -z db 5432; do
+          sleep 2;
+        done;
+        echo 'Database is ready!';
+        npx prisma generate;
+        npx prisma migrate deploy;
+        npm run prisma:seed
+        npm run build;
+        npm run start;
+      "
+
+  # Контейнер базы данных
   db:
-    image: postgres
+    image: postgres:16
     restart: always
     environment:
       POSTGRES_USER: myuser
       POSTGRES_PASSWORD: mypassword
       POSTGRES_DB: mydb
     ports:
-      - 5432:5432
-    # volumes:
-    #   - postgres_data:/var/lib/postgresql/data
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U myuser -d mydb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:

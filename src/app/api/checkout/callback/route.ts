@@ -6,6 +6,8 @@ import { sendEmail } from "@/lib/sendEmail";
 import { CartItemDTO } from "../../../../../@types/cartTypes";
 import { OrderSuccess } from "@/components/shared/email-template/OrderSuccess";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(req: NextRequest) {
   try {
     const body = (await req.json()) as PaymentCallbackData;

@@ -1,0 +1,23 @@
+# Исключаем папки
+node_modules
+.next
+out
+.prisma
+prisma/dev.db
+
+# Исключаем системные файлы
+.DS_Store
+.env
+.env.local
+.env.development
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Исключаем git
+.git
+.gitignore
+
+# Docker файлы можно оставить
+!Dockerfile
+!docker-compose.yml
